@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- A transparent black -->
+    <color name="transparent_black">#99000000</color>
+
+    <!-- A semi-transparent dark Holo shade of blue -->
+    <color name="holo_blue_dark">#ff222222</color>
+
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
+
+    <!-- Black -->
+    <color name="black">#ff000000</color>
+
+    <!-- White -->
+    <color name="white">#ffffffff</color>
+
+    <!-- Quick Queue line seperator -->
+    <color name="queue_callout_line">#99ffffff</color>
+
+    <color name="tab_unselected_holo">#80222222</color>
+    <color name="tab_selected_holo">#ff222222</color>
+    <color name="tab_unselected_focused_holo">#60222222</color>
+    <color name="tab_unselected_pressed_holo">#90595959</color>
+    <color name="tab_selected_pressed_holo">#ff595959</color>
+</resources>

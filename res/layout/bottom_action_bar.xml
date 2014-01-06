@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_action_bar_container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/bottom_action_bar_height"
+    android:layout_gravity="bottom"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/bottom_action_bar_info_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_action_bar_divider_height"
+        android:background="#222222"
+        tools:ignore="ContentDescription" />
+
+    <com.spacecaker.butter.ui.widgets.BottomActionBar
+        android:id="@+id/bottom_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#222222"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/bottom_action_bar_album_art"
+            android:layout_width="@dimen/bottom_action_bar_album_art_width_height"
+            android:layout_height="@dimen/bottom_action_bar_album_art_width_height"
+            android:layout_gravity="left|center"
+            android:contentDescription="@string/cd_bottom_action_bar_album_art"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/bottom_action_bar_info_padding_left" >
+
+            <TextView
+                android:id="@+id/bottom_action_bar_track_name"
+                style="@style/BottomActionBarText"
+                android:textColor="#ffffffff"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bottom_action_bar_artist_name"
+                style="@style/BottomActionBarText"
+                android:textColor="#ffffffff" />
+        </LinearLayout>
+
+        <com.spacecaker.butter.ui.widgets.BottomActionBarItem
+            android:id="@+id/bottom_action_bar_item_one"
+            style="@style/BottomActionBarItem"
+            android:contentDescription="@string/cd_favorite"
+            android:src="@drawable/space_fav" />
+
+        <com.spacecaker.butter.ui.widgets.BottomActionBarItem
+            android:id="@+id/bottom_action_bar_item_two"
+            style="@style/BottomActionBarItem"
+            android:contentDescription="@string/cd_search"
+            android:src="@drawable/space_search" />
+
+        <com.spacecaker.butter.ui.widgets.BottomActionBarItem
+            android:id="@+id/bottom_action_bar_item_three"
+            style="@style/BottomActionBarItem"
+            android:contentDescription="@string/cd_overflow"
+            android:src="@drawable/space_overflow" />
+    </com.spacecaker.butter.ui.widgets.BottomActionBar>
+
+</LinearLayout>
