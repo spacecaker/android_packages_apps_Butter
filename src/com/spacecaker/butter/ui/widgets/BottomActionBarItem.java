@@ -105,12 +105,12 @@ public class BottomActionBarItem extends ImageButton implements OnLongClickListe
                 // TODO Only shuffle the tracks that are shown
                 shuffleAll();
                 break;
-            // case R.id.fetch_artwork:
-            // initAlbumImages();
-            // break;
-            // case R.id.fetch_artist_images:
-            // initArtistImages();
-            // break;
+            case R.id.fetch_artwork:
+				initAlbumImages();
+				break;
+            case R.id.fetch_artist_images:
+				initArtistImages();
+				break;
             default:
                 break;
         }

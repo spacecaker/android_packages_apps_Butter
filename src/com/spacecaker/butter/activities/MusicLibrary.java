@@ -63,9 +63,6 @@ public class MusicLibrary extends FragmentActivity implements ServiceConnection 
         // Layout
         setContentView(R.layout.library_browser);
 
-        // Hide the ActionBar
-        getActionBar().hide();
-
         // Important!
         initPager();
 

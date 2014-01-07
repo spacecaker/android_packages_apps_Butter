@@ -215,10 +215,6 @@ public class AudioPlayerHolder extends FragmentActivity implements ServiceConnec
                 startActivityForResult(i, EFFECTS_PANEL);
                 break;
             }
-            case R.id.play_store: {
-                ApolloUtils.shopFor(this, MusicUtils.getArtistName());
-                break;
-            }
             case R.id.share: {
                 shareCurrentTrack();
                 break;

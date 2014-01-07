@@ -4,23 +4,15 @@
 
 package com.spacecaker.butter.preferences;
 
-import java.util.List;
-
+import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,18 +20,14 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.androidquery.AQuery;
 import com.spacecaker.butter.IApolloService;
 import com.spacecaker.butter.R;
 import com.spacecaker.butter.activities.AudioPlayerHolder;
-import com.spacecaker.butter.activities.MusicLibrary;
 import com.spacecaker.butter.service.ApolloService;
 import com.spacecaker.butter.service.ServiceToken;
 import com.spacecaker.butter.utils.ApolloUtils;
 import com.spacecaker.butter.utils.MusicUtils;
-import com.androidquery.AQuery;
-
-import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
-import static com.spacecaker.butter.Constants.APOLLO;
 /**
  * @author Andrew Neal FIXME - Work on the IllegalStateException thrown when
  *         using PreferenceFragment and theme chooser

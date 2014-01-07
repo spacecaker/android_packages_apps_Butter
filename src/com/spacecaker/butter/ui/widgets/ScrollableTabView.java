@@ -47,7 +47,7 @@ public class ScrollableTabView extends HorizontalScrollView implements
 
     private Drawable mDividerDrawable;
 
-    private final int mDividerColor = 0xFF636363;
+    private final int mDividerColor = 0x00000000;
 
     private int mDividerMarginTop = 12;
 

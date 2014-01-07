@@ -15,6 +15,10 @@
 
 package com.spacecaker.butter.service;
 
+import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
+import static com.spacecaker.butter.Constants.APOLLO_PREFERENCES;
+import static com.spacecaker.butter.Constants.DATA_SCHEME;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Random;
@@ -62,8 +66,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
+import com.androidquery.AQuery;
 import com.spacecaker.butter.IApolloService;
 import com.spacecaker.butter.R;
 import com.spacecaker.butter.app.widgets.AppWidget11;
@@ -72,11 +76,6 @@ import com.spacecaker.butter.app.widgets.AppWidget42;
 import com.spacecaker.butter.utils.ApolloUtils;
 import com.spacecaker.butter.utils.MusicUtils;
 import com.spacecaker.butter.utils.SharedPreferencesCompat;
-import com.androidquery.AQuery;
-
-import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
-import static com.spacecaker.butter.Constants.APOLLO_PREFERENCES;
-import static com.spacecaker.butter.Constants.DATA_SCHEME;
 
 public class ApolloService extends Service {
     /**

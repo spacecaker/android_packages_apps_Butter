@@ -19,9 +19,9 @@
     <!-- Quick Queue line seperator -->
     <color name="queue_callout_line">#99ffffff</color>
 
-    <color name="tab_unselected_holo">#80222222</color>
+    <color name="tab_unselected_holo">#99222222</color>
     <color name="tab_selected_holo">#ff222222</color>
-    <color name="tab_unselected_focused_holo">#60222222</color>
-    <color name="tab_unselected_pressed_holo">#90595959</color>
-    <color name="tab_selected_pressed_holo">#ff595959</color>
+    <color name="tab_unselected_focused_holo">#90222222</color>
+    <color name="tab_unselected_pressed_holo">#90222222</color>
+    <color name="tab_selected_pressed_holo">#ff222222</color>
 </resources>

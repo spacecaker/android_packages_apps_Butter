@@ -13,13 +13,13 @@
     <!--
     <item
         android:id="@+id/help"
-        android:title="@string/help"/>
+        android:title="@string/help"/>        
+    -->
     <item
         android:id="@+id/fetch_artwork"
         android:title="Fetch album art"/>
     <item
         android:id="@+id/fetch_artist_images"
-        android:title="Fetch artist images"/>
-    -->
+        android:title="Fetch artist images"/>
 
 </menu>
