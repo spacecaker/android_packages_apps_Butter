@@ -5,7 +5,7 @@
     android:versionName="2.1" >
 
     <uses-sdk
-        android:minSdkVersion="10"
+        android:minSdkVersion="14"
         android:targetSdkVersion="16" />
 
     <!-- This is used for Last.fm and Google Music -->

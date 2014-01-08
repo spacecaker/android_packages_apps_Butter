@@ -1313,10 +1313,13 @@ public class ApolloService extends Service {
         Bitmap b = aq.getCachedImage(ApolloUtils.getImageURL(getAlbumName(), ALBUM_IMAGE, this));
 
         RemoteViews views = new RemoteViews(getPackageName(), R.layout.status_bar);
+		RemoteViews bigViews = new RemoteViews(getPackageName(), R.layout.status_bar_expanded);
+		
         if (b != null) {
             views.setViewVisibility(R.id.status_bar_icon, View.GONE);
             views.setViewVisibility(R.id.status_bar_album_art, View.VISIBLE);
             views.setImageViewBitmap(R.id.status_bar_album_art, b);
+			bigViews.setImageViewBitmap(R.id.status_bar_album_art, b);
         } else {
             views.setViewVisibility(R.id.status_bar_icon, View.VISIBLE);
             views.setViewVisibility(R.id.status_bar_album_art, View.GONE);
@@ -1332,25 +1335,39 @@ public class ApolloService extends Service {
         PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
                 1, mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.status_bar_play, mediaPendingIntent);
+		bigViews.setOnClickPendingIntent(R.id.status_bar_play, mediaPendingIntent);
         mediaButtonIntent.putExtra(CMDNOTIF, 2);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
         mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
         mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 2,
                 mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.status_bar_next, mediaPendingIntent);
+		bigViews.setOnClickPendingIntent(R.id.status_bar_next, mediaPendingIntent);
+        mediaButtonIntent.putExtra(CMDNOTIF, 4);
+        mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
+        mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 4,
+                mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);       
+        bigViews.setOnClickPendingIntent(R.id.status_bar_prev, mediaPendingIntent);		
         mediaButtonIntent.putExtra(CMDNOTIF, 3);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_STOP);
         mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
         mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 3,
                 mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.status_bar_collapse, mediaPendingIntent);
+		bigViews.setOnClickPendingIntent(R.id.status_bar_collapse, mediaPendingIntent);
         views.setImageViewResource(R.id.status_bar_play, R.drawable.butter_holo_dark_pause);
+		bigViews.setImageViewResource(R.id.status_bar_play, R.drawable.butter_holo_dark_pause);
 
         views.setTextViewText(R.id.status_bar_track_name, getTrackName());
+		bigViews.setTextViewText(R.id.status_bar_track_name, getTrackName());
         views.setTextViewText(R.id.status_bar_artist_name, getArtistName());
+		bigViews.setTextViewText(R.id.status_bar_artist_name, getArtistName());
+		bigViews.setTextViewText(R.id.status_bar_album_name, getAlbumName());
 
         status = new Notification();
         status.contentView = views;
+		status.bigContentView = bigViews;
         status.flags = Notification.FLAG_ONGOING_EVENT;
         status.icon = R.drawable.stat_notify_music;
         status.contentIntent = PendingIntent

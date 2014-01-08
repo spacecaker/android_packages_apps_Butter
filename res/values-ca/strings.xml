@@ -81,11 +81,6 @@
     <string name="search">Cerca</string>
     <string name="remove">Suprimeix de la llista</string>
 
-    <!-- App Widgets -->
-    <string name="apollo_1x1">Apollo (1x1)</string>
-    <string name="apollo_4x1">Apollo (4x1)</string>
-    <string name="apollo_4x2">Apollo (4x2)</string>
-
     <!-- Unknown genre name -->
     <string name="unknown">Desconegut</string>
 
