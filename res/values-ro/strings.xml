@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">"Apollo"</string>
+    <string name="app_name">"Butter"</string>
     <string name="cd_favorite">"Faceţi acestă melodie una favorită"</string>
     <string name="cd_search">"Căutaţi prin muzica dvs."</string>
     <string name="cd_overflow">"Mai multe opţiuni"</string>

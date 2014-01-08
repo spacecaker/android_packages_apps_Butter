@@ -2,7 +2,13 @@
 <resources>
 
     <!-- A transparent black -->
-    <color name="transparent_black">#99000000</color>
+    <color name="transparent_black">#90000000</color>
+    
+    <!-- selected tab text -->
+    <color name="selected_tabtext">#bb000000</color>
+    
+    <!-- non selected tab text -->
+    <color name="unselected_tabtext">#77000000</color>
 
     <!-- A semi-transparent dark Holo shade of blue -->
     <color name="holo_blue_dark">#ff222222</color>
@@ -18,7 +24,6 @@
 
     <!-- Quick Queue line seperator -->
     <color name="queue_callout_line">#99ffffff</color>
-
     <color name="tab_unselected_holo">#99222222</color>
     <color name="tab_selected_holo">#ff222222</color>
     <color name="tab_unselected_focused_holo">#90222222</color>

@@ -14,10 +14,10 @@
         android:gravity="center_vertical" 
         android:orientation="horizontal" 
         android:id="@+id/buttons" 
+        android:background="#222222"
         android:layout_width="wrap_content" 
-        android:background="#222222" 
         android:layout_height="wrap_content" 
-        android:divider="#ffffff" 
+        android:divider="?android:listDivider" 
         android:layout_toRightOf="@id/status_bar_album_art" 
         android:layout_alignParentRight="true" 
         android:layout_alignParentBottom="true" 
@@ -29,7 +29,7 @@
 	            android:padding="10.0dip" 
 	            android:layout_width="0.0dip" 
 	            android:layout_height="@dimen/play_controls_notification" 
-	            android:src="@drawable/space_previous" 
+	            android:src="@drawable/butter_holo_light_previous" 
 	            android:scaleType="fitCenter" 
 	            android:layout_weight="1.0" />
 	        <ImageButton 
@@ -38,7 +38,7 @@
 	            android:padding="10.0dip" 
 	            android:layout_width="0.0dip" 
 	            android:layout_height="@dimen/play_controls_notification" 
-	            android:src="@drawable/space_play" 
+	            android:src="@drawable/butter_holo_dark_play" 
 	            android:scaleType="fitCenter" 
 	            android:layout_weight="1.0" />
 	        <ImageButton android:id="@+id/status_bar_next" 
@@ -46,7 +46,7 @@
 	            android:padding="10.0dip" 
 	            android:layout_width="0.0dip" 
 	            android:layout_height="@dimen/play_controls_notification" 
-	            android:src="@drawable/space_forw" 
+	            android:src="@drawable/butter_holo_dark_next" 
 	            android:scaleType="fitCenter" 
 	            android:layout_weight="1.0" />
     </LinearLayout>

@@ -6,6 +6,6 @@
 
     <stroke
         android:width="@dimen/viewpager_margin_stroke_width"
-        android:color="#ffffffff" />
+        android:color="@color/transparent_black" />
 
 </shape>

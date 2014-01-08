@@ -22,7 +22,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -30,10 +32,7 @@ import com.spacecaker.butter.R;
 import com.spacecaker.butter.activities.AudioPlayerHolder;
 import com.spacecaker.butter.activities.MusicLibrary;
 import com.spacecaker.butter.service.ApolloService;
-import com.spacecaker.butter.utils.ApolloUtils;
-import com.androidquery.AQuery;
-
-import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
+import static com.spacecaker.butter.Constants.WIDGET_STYLE;
 
 /**
  * Simple widget to show currently playing album art along with play/pause and
@@ -70,8 +69,12 @@ public class AppWidget42 extends AppWidgetProvider {
      * default click and hide actions if service not running.
      */
     private void defaultAppWidget(Context context, int[] appWidgetIds) {
-        final RemoteViews views = new RemoteViews(context.getPackageName(),
-                R.layout.fourbytwo_app_widget);
+    	SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    	String widget_type = sp.getString( WIDGET_STYLE, context.getResources().getString(R.string.widget_style_light) );
+
+    	final RemoteViews views = new RemoteViews(context.getPackageName(),
+                (widget_type.equals(context.getResources().getString(R.string.widget_style_light))?R.layout.fourbytwo_app_widget:R.layout.fourbytwo_app_widget_dark));
+        
 
         linkButtons(context, views, false /* not playing */);
         pushUpdate(context, appWidgetIds, views);
@@ -117,9 +120,14 @@ public class AppWidget42 extends AppWidgetProvider {
      * Update all active widget instances by pushing changes
      */
     public void performUpdate(ApolloService service, int[] appWidgetIds) {
-        final RemoteViews views = new RemoteViews(service.getPackageName(),
-                R.layout.fourbytwo_app_widget);
+    	
+    	Context mContext = service.getApplicationContext();
+    	SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+    	String widget_type = sp.getString( WIDGET_STYLE, mContext.getResources().getString(R.string.widget_style_light) );
 
+    	final RemoteViews views = new RemoteViews(mContext.getPackageName(),
+                (widget_type.equals(mContext.getResources().getString(R.string.widget_style_light))?R.layout.fourbytwo_app_widget:R.layout.fourbytwo_app_widget_dark));
+        
         CharSequence artistName = service.getArtistName();
         CharSequence albumName = service.getAlbumName();
         CharSequence trackName = service.getTrackName();
@@ -128,9 +136,7 @@ public class AppWidget42 extends AppWidgetProvider {
         views.setTextViewText(R.id.four_by_two_trackname, trackName);
 
         // Set album art
-        AQuery aq = new AQuery(service);
-        Bitmap bitmap = aq.getCachedImage(ApolloUtils.getImageURL(service.getAlbumName(),
-                ALBUM_IMAGE, service));
+        Bitmap bitmap = service.getAlbumBitmap();
         if (bitmap != null) {
             views.setViewVisibility(R.id.four_by_two_albumart, View.VISIBLE);
             views.setImageViewBitmap(R.id.four_by_two_albumart, bitmap);
@@ -142,12 +148,12 @@ public class AppWidget42 extends AppWidgetProvider {
         final boolean playing = service.isPlaying();
         if (playing) {
             views.setImageViewResource(R.id.four_by_two_control_play,
-                    R.drawable.butter_holo_light_pause);
+            		 (widget_type.equals(mContext.getResources().getString(R.string.widget_style_light))?R.drawable.butter_holo_light_pause:R.drawable.butter_holo_dark_pause));
             views.setContentDescription(R.id.four_by_two_albumart,
                 service.getResources().getString(R.string.nowplaying));
         } else {
             views.setImageViewResource(R.id.four_by_two_control_play,
-                    R.drawable.butter_holo_light_play);
+            		(widget_type.equals(mContext.getResources().getString(R.string.widget_style_light))?R.drawable.butter_holo_light_play:R.drawable.butter_holo_dark_play));
             views.setContentDescription(R.id.four_by_two_albumart,
                 service.getResources().getString(R.string.butter_name));
         }
@@ -164,7 +170,7 @@ public class AppWidget42 extends AppWidgetProvider {
                 break;
             default:
                 views.setImageViewResource(R.id.four_by_two_control_repeat,
-                        R.drawable.butter_holo_light_repeat_normal);
+                		(widget_type.equals(mContext.getResources().getString(R.string.widget_style_light))?R.drawable.butter_holo_light_repeat_normal:R.drawable.butter_holo_light_repeat_normal));
                 break;
         }
 
@@ -172,7 +178,7 @@ public class AppWidget42 extends AppWidgetProvider {
         switch (service.getShuffleMode()) {
             case ApolloService.SHUFFLE_NONE:
                 views.setImageViewResource(R.id.four_by_two_control_shuffle,
-                        R.drawable.butter_holo_light_shuffle_normal);
+                		(widget_type.equals(mContext.getResources().getString(R.string.widget_style_light))?R.drawable.butter_holo_light_shuffle_normal:R.drawable.butter_holo_light_shuffle_normal));
                 break;
             case ApolloService.SHUFFLE_AUTO:
                 views.setImageViewResource(R.id.four_by_two_control_shuffle,

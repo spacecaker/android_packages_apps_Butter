@@ -47,9 +47,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.spacecaker.butter.R;
+import com.spacecaker.butter.helpers.utils.ApolloUtils;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
 import com.spacecaker.butter.service.ServiceToken;
-import com.spacecaker.butter.utils.ApolloUtils;
-import com.spacecaker.butter.utils.MusicUtils;
 
 import static com.spacecaker.butter.Constants.ALBUM_KEY;
 import static com.spacecaker.butter.Constants.ARTIST_ID;

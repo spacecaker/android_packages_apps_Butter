@@ -18,7 +18,8 @@
         android:id="@+id/bottom_action_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#222222"
+        android:background="@drawable/holo_selector_bg"
+        android:paddingLeft="@dimen/bottom_action_bar_padding_left"
         android:orientation="horizontal" >
 
         <ImageView
@@ -40,32 +41,33 @@
             <TextView
                 android:id="@+id/bottom_action_bar_track_name"
                 style="@style/BottomActionBarText"
-                android:textColor="#ffffffff"
+                android:textColor="#ffffff"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/bottom_action_bar_artist_name"
                 style="@style/BottomActionBarText"
-                android:textColor="#ffffffff" />
+                android:textColor="#ffffff" />
         </LinearLayout>
-
-        <com.spacecaker.butter.ui.widgets.BottomActionBarItem
-            android:id="@+id/bottom_action_bar_item_one"
+        
+        <ImageButton
+            android:id="@+id/bottom_action_bar_previous"
             style="@style/BottomActionBarItem"
-            android:contentDescription="@string/cd_favorite"
-            android:src="@drawable/space_fav" />
+            android:contentDescription="@string/cd_previous"
+            android:src="@drawable/butter_holo_light_previous" />
 
-        <com.spacecaker.butter.ui.widgets.BottomActionBarItem
-            android:id="@+id/bottom_action_bar_item_two"
+        <ImageButton
+            android:id="@+id/bottom_action_bar_play"
             style="@style/BottomActionBarItem"
-            android:contentDescription="@string/cd_search"
-            android:src="@drawable/space_search" />
+            android:contentDescription="@string/cd_play"
+            android:src="@drawable/butter_holo_light_play" />
 
-        <com.spacecaker.butter.ui.widgets.BottomActionBarItem
-            android:id="@+id/bottom_action_bar_item_three"
+        <ImageButton
+            android:id="@+id/bottom_action_bar_next"
             style="@style/BottomActionBarItem"
-            android:contentDescription="@string/cd_overflow"
-            android:src="@drawable/space_overflow" />
+            android:contentDescription="@string/cd_next"
+            android:src="@drawable/butter_holo_light_next" />        
+        
     </com.spacecaker.butter.ui.widgets.BottomActionBar>
 
 </LinearLayout>

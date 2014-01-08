@@ -6,22 +6,26 @@
     <include
         android:id="@+id/half"
         layout="@layout/half_and_half" />
-
+    
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/half" />
+        android:layout_below="@+id/half" 
+        android:windowContentOverlay="@null"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_action_bar_height"
         android:layout_alignParentBottom="true" >
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/bottomActionBarPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        
+        <fragment android:name="com.spacecaker.butter.ui.fragments.BottomActionBarFragment"
+            android:id="@+id/bottomactionbar_new"
+            android:layout_weight="1"
+			android:layout_width="match_parent"
+            android:layout_height="match_parent" /> 
+
     </LinearLayout>
 
 </RelativeLayout>

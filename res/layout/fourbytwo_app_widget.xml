@@ -14,39 +14,39 @@
     <LinearLayout
         android:id="@+id/four_by_two_controls"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/four_by_two_control_height"
         android:background="#222222"
+        android:layout_height="@dimen/four_by_two_control_height"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal" >
 
         <ImageButton
             android:id="@+id/four_by_two_control_prev"
             style="@style/FourByTwoMediaButton"
-            android:src="@drawable/space_previous"
+            android:src="@drawable/butter_holo_light_previous"
             android:contentDescription="@string/cd_previous" />
 
         <ImageButton
             android:id="@+id/four_by_two_control_play"
             style="@style/FourByTwoMediaButton"
-            android:src="@drawable/space_play"
+            android:src="@drawable/butter_holo_light_play"
             android:contentDescription="@string/cd_play" />
 
         <ImageButton
             android:id="@+id/four_by_two_control_next"
             style="@style/FourByTwoMediaButton"
-            android:src="@drawable/space_forw"
+            android:src="@drawable/butter_holo_light_next"
             android:contentDescription="@string/cd_next" />
 
         <ImageButton
             android:id="@+id/four_by_two_control_shuffle"
             style="@style/FourByTwoMediaButton"
-            android:src="@drawable/space_shuffle_normal"
+            android:src="@drawable/butter_holo_light_shuffle_normal"
             android:contentDescription="@string/cd_shuffle" />
 
         <ImageButton
             android:id="@+id/four_by_two_control_repeat"
             style="@style/FourByTwoMediaButton"
-            android:src="@drawable/space_repeat_normal"
+            android:src="@drawable/butter_holo_light_repeat_normal"
             android:contentDescription="@string/cd_repeat" />
     </LinearLayout>
 
@@ -71,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_above="@id/four_by_two_controls"
-        android:background="#222222"
+        android:background="@color/holo_blue_dark"
         tools:ignore="ContentDescription" />
 
     <LinearLayout

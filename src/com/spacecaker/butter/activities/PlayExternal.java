@@ -16,6 +16,7 @@
 
 package com.spacecaker.butter.activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -26,14 +27,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.spacecaker.butter.IApolloService;
 import com.spacecaker.butter.R;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
 import com.spacecaker.butter.service.ServiceToken;
-import com.spacecaker.butter.utils.MusicUtils;
 
 import java.io.File;
 import java.net.URLDecoder;
@@ -41,7 +41,7 @@ import java.net.URLDecoder;
 /**
  * An activity that lets external browsers launching music inside Apollo
  */
-public class PlayExternal extends FragmentActivity
+public class PlayExternal extends Activity
     implements ServiceConnection, DialogInterface.OnCancelListener {
 
     private static final String TAG = "PlayExternal";
@@ -147,7 +147,7 @@ public class PlayExternal extends FragmentActivity
             Toast.makeText(
                     getApplicationContext(),
                     R.string.play_external_error,
-                    Toast.LENGTH_SHORT);
+                    Toast.LENGTH_SHORT).show();
             Log.e(TAG, String.format("Failed to play external file: ", uri.toString()), e);
             try {
                 Thread.sleep(1000L);

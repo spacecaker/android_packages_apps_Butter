@@ -4,6 +4,7 @@
 
 package com.spacecaker.butter.activities;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
 import android.provider.MediaStore.Audio;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,17 +28,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.spacecaker.butter.AudioPlayerFragment;
+import com.spacecaker.butter.ui.adapters.PagerAdapter;
+import com.spacecaker.butter.ui.fragments.AudioPlayerFragment;
 import com.spacecaker.butter.IApolloService;
 import com.spacecaker.butter.R;
-import com.spacecaker.butter.adapters.PagerAdapter;
-import com.spacecaker.butter.list.fragments.TracksFragment;
+import com.spacecaker.butter.ui.fragments.list.TracksFragment;
+import com.spacecaker.butter.helpers.utils.ApolloUtils;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
+import com.spacecaker.butter.helpers.utils.ThemeUtils;
 import com.spacecaker.butter.preferences.SettingsHolder;
 import com.spacecaker.butter.service.ApolloService;
 import com.spacecaker.butter.service.ServiceToken;
-import com.spacecaker.butter.utils.ApolloUtils;
-import com.spacecaker.butter.utils.MusicUtils;
-import com.spacecaker.butter.utils.ThemeUtils;
 
 import static com.spacecaker.butter.Constants.INTENT_ADD_TO_PLAYLIST;
 import static com.spacecaker.butter.Constants.INTENT_PLAYLIST_LIST;
@@ -50,7 +50,7 @@ import static com.spacecaker.butter.Constants.THEME_ITEM_BACKGROUND;
  * @author Andrew Neal
  * @Note This is the "holder" for the @TracksFragment(queue) and @AudioPlayerFragment
  */
-public class AudioPlayerHolder extends FragmentActivity implements ServiceConnection {
+public class AudioPlayerHolder extends Activity implements ServiceConnection {
 
     private ServiceToken mToken;
 
@@ -215,12 +215,16 @@ public class AudioPlayerHolder extends FragmentActivity implements ServiceConnec
                 startActivityForResult(i, EFFECTS_PANEL);
                 break;
             }
+            case R.id.play_store: {
+                ApolloUtils.shopFor(this, MusicUtils.getArtistName());
+                break;
+            }
             case R.id.share: {
                 shareCurrentTrack();
                 break;
             }
             case R.id.settings: {
-                startActivity(new Intent(this, SettingsHolder.class));
+	        	startActivityForResult(new Intent(this, SettingsHolder.class),0);
                 break;
             }
             default:
@@ -228,6 +232,15 @@ public class AudioPlayerHolder extends FragmentActivity implements ServiceConnec
         }
         return super.onOptionsItemSelected(item);
     }
+    
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        Intent intent = getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        startActivity(intent);
+    }   
 
     private void initActionBar() {
         ApolloUtils.showUpTitleOnly(getActionBar());
@@ -273,7 +286,7 @@ public class AudioPlayerHolder extends FragmentActivity implements ServiceConnec
      */
     public void initPager() {
         // Initiate PagerAdapter
-        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new PagerAdapter(getFragmentManager());
         Bundle bundle = new Bundle();
         bundle.putString(MIME_TYPE, Audio.Playlists.CONTENT_TYPE);
         bundle.putLong(BaseColumns._ID, PLAYLIST_QUEUE);

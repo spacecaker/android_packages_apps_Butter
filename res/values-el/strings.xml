@@ -2,7 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- App name -->
-    <string name="app_name">Apollo</string>
+    <string name="butter_name">Butter</string>
 
     <!-- Content descriptions for the Bottom Action Bar -->
     <string name="cd_favorite">Προσθήκη του κομματιού στα αγαπημένα</string>
@@ -118,7 +118,7 @@
     <string name="tab_genres">ΕΙΔΗ</string>
 
     <!-- External file dialog -->
-    <string name="play_external_question_msg">Select the action to apply to: \n\n<b><xliff:g id="name">%s</xliff:g></b></string>
+    <string name="play_external_question_msg">Επιλέξτε ενέργεια για το αρχείο: \n\n<b><xliff:g id="name">%s</xliff:g></b></string>
     <string name="play_external_question_button_play">Αναπαραγωγή</string>
     <string name="play_external_question_button_queue">Προσθήκη στην ουρά</string>
     <string name="play_external_question_button_cancel">Άκυρο</string>

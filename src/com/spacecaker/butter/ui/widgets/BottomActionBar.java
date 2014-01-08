@@ -4,16 +4,17 @@
 
 package com.spacecaker.butter.ui.widgets;
 
+import static com.spacecaker.butter.Constants.SIZE_THUMB;
+import static com.spacecaker.butter.Constants.SRC_FIRST_AVAILABLE;
+import static com.spacecaker.butter.Constants.TYPE_ALBUM;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,15 +22,16 @@ import android.widget.TextView;
 import com.spacecaker.butter.R;
 import com.spacecaker.butter.activities.AudioPlayerHolder;
 import com.spacecaker.butter.activities.QuickQueue;
-import com.spacecaker.butter.tasks.GetCachedImages;
-import com.spacecaker.butter.utils.MusicUtils;
-import com.spacecaker.butter.utils.ThemeUtils;
+import com.spacecaker.butter.cache.ImageInfo;
+import com.spacecaker.butter.cache.ImageProvider;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
+import com.spacecaker.butter.helpers.utils.ThemeUtils;
 
 /**
  * @author Andrew Neal
  */
 public class BottomActionBar extends LinearLayout implements OnClickListener, OnLongClickListener {
-
+	 
     public BottomActionBar(Context context) {
         super(context);
     }
@@ -71,32 +73,24 @@ public class BottomActionBar extends LinearLayout implements OnClickListener, On
             // Album art
             ImageView mAlbumArt = (ImageView)bottomActionBar
                     .findViewById(R.id.bottom_action_bar_album_art);
+            
 
-            new GetCachedImages(activity, 1, mAlbumArt).executeOnExecutor(
-                    AsyncTask.THREAD_POOL_EXECUTOR, MusicUtils.getAlbumName());
-
-            // Favorite image
-            ImageButton mFavorite = (ImageButton)bottomActionBar
-                    .findViewById(R.id.bottom_action_bar_item_one);
-
-            MusicUtils.setFavoriteImage(mFavorite);
-
+            ImageInfo mInfo = new ImageInfo();
+            mInfo.type = TYPE_ALBUM;
+            mInfo.size = SIZE_THUMB;
+            mInfo.source = SRC_FIRST_AVAILABLE;
+            mInfo.data = new String[]{ String.valueOf(MusicUtils.getCurrentAlbumId()) , MusicUtils.getArtistName(), MusicUtils.getAlbumName() };
+            
+            ImageProvider.getInstance( activity ).loadImage( mAlbumArt , mInfo );
+            
             // Divider
             ImageView mDivider = (ImageView)activity
                     .findViewById(R.id.bottom_action_bar_info_divider);
-
-            ImageButton mSearch = (ImageButton)bottomActionBar
-                    .findViewById(R.id.bottom_action_bar_item_two);
-
-            ImageButton mOverflow = (ImageButton)bottomActionBar
-                    .findViewById(R.id.bottom_action_bar_item_three);
-
+            
             // Theme chooser
             ThemeUtils.setTextColor(activity, mTrackName, "bottom_action_bar_text_color");
             ThemeUtils.setTextColor(activity, mArtistName, "bottom_action_bar_text_color");
             ThemeUtils.setBackgroundColor(activity, mDivider, "bottom_action_bar_info_divider");
-            ThemeUtils.setImageButton(activity, mSearch, "apollo_search");
-            ThemeUtils.setImageButton(activity, mOverflow, "apollo_overflow");
         }
     }
 
@@ -121,4 +115,5 @@ public class BottomActionBar extends LinearLayout implements OnClickListener, On
         context.startActivity(new Intent(context, QuickQueue.class));
         return true;
     }
+    
 }

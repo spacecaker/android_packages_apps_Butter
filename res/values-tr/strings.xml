@@ -2,7 +2,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- App name -->
-    <string name="app_name">Apollo</string>
+    <string name="butter_name">Butter</string>
 
     <!-- Content descriptions for the Bottom Action Bar -->
     <string name="cd_favorite">Bu şarkıyı beğenilenlere ekle</string>

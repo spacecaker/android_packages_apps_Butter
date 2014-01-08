@@ -5,24 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.spacecaker.butter.R;
-import com.spacecaker.butter.utils.MusicUtils;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
 
 import static com.spacecaker.butter.Constants.INTENT_ADD_TO_PLAYLIST;
 import static com.spacecaker.butter.Constants.INTENT_CREATE_PLAYLIST;
 import static com.spacecaker.butter.Constants.INTENT_PLAYLIST_LIST;
-import static com.spacecaker.butter.Constants.PLAYLIST_QUEUE;
 import static com.spacecaker.butter.Constants.PLAYLIST_NEW;
+import static com.spacecaker.butter.Constants.PLAYLIST_QUEUE;
 
-public class PlaylistPicker extends FragmentActivity implements DialogInterface.OnClickListener,
+public class PlaylistPicker extends Activity implements DialogInterface.OnClickListener,
         DialogInterface.OnCancelListener {
 
     private AlertDialog mPlayListPickerDialog;

@@ -38,7 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.spacecaker.butter.R;
-import com.spacecaker.butter.utils.MusicUtils;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
 
 import static com.spacecaker.butter.Constants.INTENT_CREATE_PLAYLIST;
 import static com.spacecaker.butter.Constants.INTENT_KEY_DEFAULT_NAME;

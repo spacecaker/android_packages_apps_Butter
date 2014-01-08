@@ -10,6 +10,10 @@
         android:showAsAction="never"
         android:title="@string/eqalizer"/>
     <item
+        android:id="@+id/play_store"
+        android:showAsAction="never"
+        android:title="@string/play_store"/>
+    <item
         android:id="@+id/share"
         android:showAsAction="never"
         android:title="@string/share"/>

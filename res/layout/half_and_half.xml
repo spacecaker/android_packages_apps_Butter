@@ -16,43 +16,43 @@
             android:id="@+id/artist_half_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/black"
-            android:padding="@dimen/half_and_half_container_padding" >
-
+            android:layout_weight="1">
+			
             <ImageView
                 android:id="@+id/half_artist_image"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/half_and_half_image_height"
+                android:layout_height="200dp"
                 android:scaleType="centerCrop" />
 
-            <TextView
-                android:id="@+id/half_artist_image_text"
-                style="@style/HalfText"
-                android:layout_alignBottom="@+id/half_artist_image"
-                android:visibility="gone" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/album_half_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/black"
-            android:padding="@dimen/half_and_half_container_padding"
-            android:visibility="gone" >
-
-            <ImageView
-                android:id="@+id/half_album_image"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/half_and_half_image_height"
-                android:scaleType="centerCrop" />
-
-            <TextView
-                android:id="@+id/half_album_image_text"
-                style="@style/HalfText"
-                android:layout_alignBottom="@+id/half_album_image" />
-        </RelativeLayout>
+			<LinearLayout
+		        android:id="@+id/half_artist_info_holder"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+	            android:layout_alignBottom="@+id/half_artist_image"
+		        android:background="@color/transparent_black"
+		        android:gravity="center_vertical"
+		        android:orientation="vertical"
+		        android:paddingTop="@dimen/gridview_item_ccontainer_padding_left"
+		        android:paddingBottom="@dimen/gridview_item_ccontainer_padding_left"
+			    android:paddingLeft="@dimen/gridview_item_ccontainer_padding_left"
+	        	android:paddingRight="@dimen/gridview_item_ccontainer_padding_right">
+		        <TextView
+		            android:id="@+id/half_artist_image_text"
+		            style="@style/GridviewShadowedText"
+		            android:textStyle="bold"/>
+		
+		        <TextView
+		            android:id="@+id/half_artist_image_text_line_two"
+		            style="@style/GridviewShadowedText"/>
+	        </LinearLayout>
+	        
+		    <RelativeLayout
+		        android:layout_width="fill_parent"
+		        android:id="@+id/bottom_colorstrip"
+	            android:layout_alignBottom="@+id/half_artist_image"
+				android:layout_height="@dimen/colorstrip_height"
+		        android:background="@color/holo_blue_dark" />
+		            
+        </RelativeLayout>        
     </LinearLayout>
-
 </RelativeLayout>

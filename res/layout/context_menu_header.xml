@@ -14,7 +14,6 @@
     <TextView
         android:id="@+id/header_text"
         style="@style/HeaderText"
-        android:textColor="#ffffffff"
         android:layout_alignBottom="@+id/header_image" />
 
 </RelativeLayout>

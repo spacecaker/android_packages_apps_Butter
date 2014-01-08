@@ -9,11 +9,13 @@
     <dimen name="text_size_large">18sp</dimen>
 
     <!-- Tabs -->
-    <dimen name="tab_padding_top_bottom">15dp</dimen>
+    <dimen name="tab_padding_top_bottom">6dp</dimen>
     <dimen name="tab_padding_left_right">40dp</dimen>
+    <dimen name="tab_height">30dp</dimen>
 
     <!-- Bottom ActionBar -->
     <dimen name="bottom_action_bar_height">48dp</dimen>
+    <dimen name="bottom_action_bar_padding_left">4dp</dimen>
     <dimen name="bottom_action_bar_item_width">56dp</dimen>
     <dimen name="bottom_action_bar_item_padding_left_right">12dp</dimen>
     <dimen name="bottom_action_bar_album_art_width_height">30dp</dimen>
@@ -21,7 +23,7 @@
     <dimen name="bottom_action_bar_info_padding_left">5dp</dimen>
 
     <!-- ViewPager margin stroke width -->
-    <dimen name="viewpager_margin_stroke_width">0.5dp</dimen>
+    <dimen name="viewpager_margin_stroke_width">0dp</dimen>
 
     <!-- FastScroll padding -->
     <dimen name="fast_scroll_padding_right">32dp</dimen>
@@ -34,10 +36,12 @@
     <!-- ListView items -->
     <dimen name="listview_item_height">64dp</dimen>
     <dimen name="listview_items_padding_left_top">9dp</dimen>
+    <dimen name="listview_items_padding_small_top">4dp</dimen>
     <dimen name="listview_items_padding_right">85dp</dimen>
     <dimen name="listview_peak_meter_one_padding_right">80dp</dimen>
     <dimen name="listview_peak_meter_two_padding_right">70dp</dimen>
-    <dimen name="listview_album_art">64dp</dimen>
+    <dimen name="listview_album_art">54dp</dimen>
+    <dimen name="listview_album_margin">4dp</dimen>
 
     <!-- Quick Context Menu -->
     <dimen name="quick_context_padding_right">4dp</dimen>
@@ -58,7 +62,7 @@
 
     <!-- Half and half layout -->
     <dimen name="half_and_half_text_padding">5dp</dimen>
-    <dimen name="half_and_half_image_height">150dp</dimen>
+    <dimen name="half_and_half_image_height">200dp</dimen>
     <dimen name="half_and_half_container_padding">3dp</dimen>
 
     <!-- ContextMenu header text padding -->
@@ -66,11 +70,12 @@
     <dimen name="header_text_padding_left">15dp</dimen>
 
     <!-- GridView items -->
-    <dimen name="gridview_image_width">180dp</dimen>
-    <dimen name="gridview_image_height">180dp</dimen>
+    <dimen name="gridview_image_width">152dp</dimen>
+    <dimen name="gridview_image_height">152dp</dimen>
+    <dimen name="gridview_item_margin">3dp</dimen>
     <dimen name="gridview_item_ccontainer_height">64dp</dimen>
-    <dimen name="gridview_item_ccontainer_padding_left">8dp</dimen>
-    <dimen name="gridview_item_ccontainer_padding_right">8dp</dimen>
+    <dimen name="gridview_item_ccontainer_padding_left">12dp</dimen>
+    <dimen name="gridview_item_ccontainer_padding_right">12dp</dimen>
     <dimen name="peak_meter_one_padding_right">15dp</dimen>
     <dimen name="peak_meter_two_padding_right">5dp</dimen>
     <dimen name="peak_meter_padding_bottom">10dp</dimen>

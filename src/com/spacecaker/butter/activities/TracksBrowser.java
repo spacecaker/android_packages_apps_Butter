@@ -4,69 +4,49 @@
 
 package com.spacecaker.butter.activities;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.app.Activity;
+import android.app.SearchManager;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.AnimationDrawable;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.media.AudioManager;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.provider.BaseColumns;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
-import android.support.v4.app.FragmentActivity;
+import android.provider.MediaStore.Audio.ArtistColumns;
 import android.support.v4.view.ViewPager;
+import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.spacecaker.butter.BottomActionBarControlsFragment;
-import com.spacecaker.butter.BottomActionBarFragment;
 import com.spacecaker.butter.IApolloService;
 import com.spacecaker.butter.R;
-import com.spacecaker.butter.adapters.PagerAdapter;
-import com.spacecaker.butter.list.fragments.ArtistAlbumsFragment;
-import com.spacecaker.butter.list.fragments.TracksFragment;
+import com.spacecaker.butter.cache.ImageInfo;
+import com.spacecaker.butter.cache.ImageProvider;
+import com.spacecaker.butter.helpers.utils.ApolloUtils;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
+import com.spacecaker.butter.helpers.utils.ThemeUtils;
+import com.spacecaker.butter.ui.adapters.PagerAdapter;
+import com.spacecaker.butter.ui.fragments.list.ArtistAlbumsFragment;
+import com.spacecaker.butter.ui.fragments.list.TracksFragment;
 import com.spacecaker.butter.service.ApolloService;
 import com.spacecaker.butter.service.ServiceToken;
-import com.spacecaker.butter.tasks.GetCachedImages;
-import com.spacecaker.butter.tasks.LastfmGetAlbumImages;
-import com.spacecaker.butter.tasks.LastfmGetArtistImagesOriginal;
-import com.spacecaker.butter.utils.ApolloUtils;
-import com.spacecaker.butter.utils.MusicUtils;
-import com.spacecaker.butter.utils.ThemeUtils;
 
-import static com.spacecaker.butter.Constants.ALBUM_KEY;
-import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
-import static com.spacecaker.butter.Constants.ARTIST_KEY;
-import static com.spacecaker.butter.Constants.ARTIST_ID;
-import static com.spacecaker.butter.Constants.ARTIST_IMAGE_ORIGINAL;
-import static com.spacecaker.butter.Constants.GENRE_KEY;
-import static com.spacecaker.butter.Constants.INTENT_ACTION;
-import static com.spacecaker.butter.Constants.MIME_TYPE;
-import static com.spacecaker.butter.Constants.PLAYLIST_NAME;
-import static com.spacecaker.butter.Constants.PLAYLIST_QUEUE;
-import static com.spacecaker.butter.Constants.PLAYLIST_FAVORITES;
-import static com.spacecaker.butter.Constants.THEME_ITEM_BACKGROUND;
-import static com.spacecaker.butter.Constants.UP_STARTS_ALBUM_ACTIVITY;
+import static com.spacecaker.butter.Constants.*;
 
 /**
  * @author Andrew Neal
  * @Note This displays specific track or album listings
  */
-public class TracksBrowser extends FragmentActivity implements ServiceConnection {
+public class TracksBrowser extends Activity implements ServiceConnection {
 
     // Bundle
     private Bundle bundle;
@@ -76,11 +56,14 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
     private String mimeType;
 
     private ServiceToken mToken;
-
-    private final long[] mHits = new long[3];
+    
+    private int RESULT_LOAD_IMAGE = 1;
+    
+    private ImageProvider mImageProvider;
 
     @Override
     protected void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
         // Landscape mode on phone isn't ready
         if (!ApolloUtils.isTablet(this))
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -90,6 +73,10 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
 
         // Layout
         setContentView(R.layout.track_browser);
+        registerForContextMenu(findViewById(R.id.half_artist_image));
+
+        //ImageCache
+    	mImageProvider = ImageProvider.getInstance( this );
 
         // Important!
         whatBundle(icicle);
@@ -105,10 +92,123 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
 
         // Important!
         initPager();
-
-        // Update the BottomActionBar
-        initBottomActionBar();
-        super.onCreate(icicle);
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    	if (Audio.Artists.CONTENT_TYPE.equals(mimeType)) {
+    		
+        	menu.setHeaderTitle(R.string.image_edit_artists);
+        	getMenuInflater().inflate(R.menu.context_artistimage, menu); 
+        	
+        } else if (Audio.Albums.CONTENT_TYPE.equals(mimeType)) {
+        	
+        	menu.setHeaderTitle(R.string.image_edit_albums);
+        	getMenuInflater().inflate(R.menu.context_albumimage, menu); 
+        	
+        } else if (Audio.Playlists.CONTENT_TYPE.equals(mimeType)) {
+        	
+        	menu.setHeaderTitle(R.string.image_edit_playlist);
+        	getMenuInflater().inflate(R.menu.context_playlist_genreimage, menu); 
+        	
+        }
+        else{
+        	
+        	menu.setHeaderTitle(R.string.image_edit_genre);
+        	getMenuInflater().inflate(R.menu.context_playlist_genreimage, menu); 
+        	
+        }
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+    	ImageInfo mInfo = null;      
+        switch (item.getItemId()) {
+            case R.id.image_edit_gallery:
+            	Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            	startActivityForResult(i, RESULT_LOAD_IMAGE);
+            	return true;
+            case R.id.image_edit_file:            	
+                mInfo = new ImageInfo();
+                mInfo.type = TYPE_ALBUM;
+                mInfo.size = SIZE_NORMAL;
+                mInfo.source = SRC_FILE;
+                mInfo.data = new String[]{ getAlbumId(), getArtist(), getAlbum() };                
+                mImageProvider.loadImage((ImageView)findViewById(R.id.half_artist_image), mInfo );
+                return true;
+            case R.id.image_edit_lastfm:           	
+                mInfo = new ImageInfo();
+                mInfo.size = SIZE_NORMAL;
+                mInfo.source = SRC_LASTFM;                
+    	        if (Audio.Artists.CONTENT_TYPE.equals(mimeType)) { 
+                    mInfo.type = TYPE_ARTIST;
+                    mInfo.data = new String[]{ getArtist() };
+    	        } else if (Audio.Albums.CONTENT_TYPE.equals(mimeType)) {
+                    mInfo.type = TYPE_ALBUM;
+                    mInfo.data = new String[]{ getAlbumId(), getArtist(), getAlbum() };
+    	        } 
+                mImageProvider.loadImage((ImageView)findViewById(R.id.half_artist_image), mInfo );
+                return true;
+            case R.id.image_edit_web:
+            	onSearchWeb();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+    
+    public void onSearchWeb(){
+    	String query = "";
+    	if (Audio.Artists.CONTENT_TYPE.equals(mimeType)) {
+    		query = getArtist();
+        } else if (Audio.Albums.CONTENT_TYPE.equals(mimeType)) {
+        	query = getAlbum() + " " + getArtist();
+        } else if (Audio.Playlists.CONTENT_TYPE.equals(mimeType)) {
+        	query = bundle.getString(PLAYLIST_NAME);
+        }
+        else{
+            Long id = bundle.getLong(BaseColumns._ID);
+            query = MusicUtils.parseGenreName(this, MusicUtils.getGenreName(this, id, true));
+        }
+        final Intent googleSearch = new Intent(Intent.ACTION_WEB_SEARCH);
+        googleSearch.putExtra(SearchManager.QUERY, query);
+        startActivity(googleSearch);	
+    }
+    
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (resultCode == Activity.RESULT_OK && requestCode == RESULT_LOAD_IMAGE  && data != null)
+	    {
+        	Uri selectedImage = data.getData();
+	        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+	        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+	        cursor.moveToFirst();
+	        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+	        String picturePath = cursor.getString(columnIndex);
+	        cursor.close();
+        	
+            ImageInfo mInfo = new ImageInfo();
+	        if (Audio.Artists.CONTENT_TYPE.equals(mimeType)) { 
+	            mInfo.type = TYPE_ARTIST;
+	            mInfo.data = new String[]{ getArtist(), picturePath };    
+	        } else if (Audio.Albums.CONTENT_TYPE.equals(mimeType)) {
+	            mInfo.type = TYPE_ALBUM;
+	            mInfo.data = new String[]{ getAlbumId(), getAlbum(), getArtist(), picturePath };
+	        } else if (Audio.Playlists.CONTENT_TYPE.equals(mimeType)) {
+	            mInfo.type = TYPE_PLAYLIST;
+	            mInfo.data = new String[]{ bundle.getString(PLAYLIST_NAME), picturePath };
+	        }
+	        else{ 
+	        	Long id = bundle.getLong(BaseColumns._ID);
+	            mInfo.type = TYPE_GENRE;
+	            mInfo.data = new String[]{  MusicUtils.parseGenreName(this, MusicUtils.getGenreName(this, id, true)), picturePath };
+	        }
+	        
+            mInfo.size = SIZE_NORMAL;
+            mInfo.source = SRC_GALLERY;          
+            mImageProvider.loadImage((ImageView)findViewById(R.id.half_artist_image), mInfo );
+	        
+	    }
     }
 
     @Override
@@ -134,8 +234,7 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (ApolloUtils.isArtist(mimeType) || ApolloUtils.isAlbum(mimeType))
-                setArtistImage();
+        	
         }
 
     };
@@ -158,7 +257,6 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
         // Unbind
         if (MusicUtils.mService != null)
             MusicUtils.unbindFromService(mToken);
-
         unregisterReceiver(mMediaStatusReceiver);
         super.onStop();
     }
@@ -168,13 +266,6 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
         switch (item.getItemId()) {
             case android.R.id.home:
                 super.onBackPressed();
-                if(bundle.getBoolean(UP_STARTS_ALBUM_ACTIVITY))
-                {
-                    // Artist ID
-                    long artistID = ApolloUtils.getArtistId(getArtist(), ARTIST_ID, this);
-                    if (ApolloUtils.isAlbum(mimeType) && artistID != 0)
-                        tracksBrowser(artistID);
-                }
                 return true;
             default:
                 break;
@@ -208,6 +299,10 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
         FrameLayout mColorstrip = (FrameLayout)findViewById(R.id.colorstrip);
         mColorstrip.setBackgroundColor(getResources().getColor(R.color.holo_blue_dark));
         ThemeUtils.setBackgroundColor(this, mColorstrip, "colorstrip");
+
+        RelativeLayout mColorstrip2 = (RelativeLayout)findViewById(R.id.bottom_colorstrip);
+        mColorstrip2.setBackgroundColor(getResources().getColor(R.color.holo_blue_dark));
+        ThemeUtils.setBackgroundColor(this, mColorstrip2, "colorstrip");
     }
 
     /**
@@ -234,32 +329,45 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
      * Sets up the @half_and_half.xml layout
      */
     private void initUpperHalf() {
+    	ImageInfo mInfo = new ImageInfo();
+    	mInfo.source = SRC_FIRST_AVAILABLE;
+        mInfo.size = SIZE_NORMAL;
+    	final ImageView imageView = (ImageView)findViewById(R.id.half_artist_image);
+    	String lineOne = "";
+    	String lineTwo = "";
 
         if (ApolloUtils.isArtist(mimeType)) {
-            // Get next artist image
-        } else if (ApolloUtils.isAlbum(mimeType)) {
-            // Album image
-            setAlbumImage();
-
-            // Artist name
-            TextView mArtistName = (TextView)findViewById(R.id.half_artist_image_text);
-            mArtistName.setVisibility(View.VISIBLE);
-            mArtistName.setText(getArtist());
-            mArtistName.setBackgroundColor(getResources().getColor(R.color.transparent_black));
-
-            // Album name
-            TextView mAlbumName = (TextView)findViewById(R.id.half_album_image_text);
-            mAlbumName.setText(getAlbum());
-            mAlbumName.setBackgroundColor(getResources().getColor(R.color.transparent_black));
-
-            // Album half container
-            RelativeLayout mSecondHalfContainer = (RelativeLayout)findViewById(R.id.album_half_container);
-            // Show the second half while viewing an album
-            mSecondHalfContainer.setVisibility(View.VISIBLE);
-        } else {
-            // Set the logo
-            setPromoImage();
+        	String mArtist = getArtist();
+            mInfo.type = TYPE_ARTIST;
+            mInfo.data = new String[]{ mArtist };  
+            lineOne = mArtist;
+            lineTwo = MusicUtils.makeAlbumsLabel(this, Integer.parseInt(getNumAlbums()), 0, false);
+        }else if (ApolloUtils.isAlbum(mimeType)) {
+        	String mAlbum = getAlbum(), mArtist = getArtist();
+            mInfo.type = TYPE_ALBUM;
+            mInfo.data = new String[]{ getAlbumId(), mAlbum, mArtist };                
+            lineOne = mAlbum;
+            lineTwo = mArtist;
+        } else if (Audio.Playlists.CONTENT_TYPE.equals(mimeType)) {
+        	String plyName = bundle.getString(PLAYLIST_NAME);
+        	mInfo.type = TYPE_PLAYLIST;
+            mInfo.data = new String[]{ plyName };               
+            lineOne = plyName;
         }
+        else{ 
+        	String genName = MusicUtils.parseGenreName(this,
+        			MusicUtils.getGenreName(this, bundle.getLong(BaseColumns._ID), true));
+        	mInfo.type = TYPE_GENRE;
+            mInfo.size = SIZE_NORMAL;
+            mInfo.data = new String[]{ genName };             
+            lineOne = genName;
+        }
+
+        mImageProvider.loadImage( imageView, mInfo );        
+        TextView lineOneView = (TextView)findViewById(R.id.half_artist_image_text);
+        lineOneView.setText(lineOne);
+        TextView lineTwoView = (TextView)findViewById(R.id.half_artist_image_text_line_two);
+        lineTwoView.setText(lineTwo);
     }
 
     /**
@@ -267,7 +375,7 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
      */
     private void initPager() {
         // Initiate PagerAdapter
-        PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        PagerAdapter mPagerAdapter = new PagerAdapter(getFragmentManager());
         if (ApolloUtils.isArtist(mimeType))
             // Show all albums for an artist
             mPagerAdapter.addFragment(new ArtistAlbumsFragment(bundle));
@@ -286,17 +394,7 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
         ThemeUtils.setMarginDrawable(this, mViewPager, "viewpager_margin");
     }
 
-    /**
-     * Initiate the BottomActionBar
-     */
-    private void initBottomActionBar() {
-        PagerAdapter pagerAdatper = new PagerAdapter(getSupportFragmentManager());
-        pagerAdatper.addFragment(new BottomActionBarFragment());
-        pagerAdatper.addFragment(new BottomActionBarControlsFragment());
-        ViewPager viewPager = (ViewPager)findViewById(R.id.bottomActionBarPager);
-        viewPager.setAdapter(pagerAdatper);
-    }
-
+    
     /**
      * @return artist name from Bundle
      */
@@ -316,6 +414,46 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
     }
 
     /**
+     * @return album name from Bundle
+     */
+    public String getAlbumId() {
+        if (bundle.getString(ALBUM_ID_KEY) != null)
+            return bundle.getString(ALBUM_ID_KEY);
+        return getResources().getString(R.string.butter_name);
+    }
+
+    /**
+     * @return number of albums from Bundle
+     */
+    public String getNumAlbums() {
+        if (bundle.getString(NUMALBUMS) != null)
+            return bundle.getString(NUMALBUMS);
+        String[] projection = {
+                BaseColumns._ID, ArtistColumns.ARTIST, ArtistColumns.NUMBER_OF_ALBUMS
+        };
+        Uri uri = Audio.Artists.EXTERNAL_CONTENT_URI;        
+        Long id = ApolloUtils.getArtistId(getArtist(), ARTIST_ID, this);
+        Cursor cursor = null;
+        try{
+        	cursor = this.getContentResolver().query(uri, projection, BaseColumns._ID+ "=" + DatabaseUtils.sqlEscapeString(String.valueOf(id)), null, null);
+        }
+        catch(Exception e){
+        	e.printStackTrace();        	
+        }
+        if(cursor == null)
+        	return String.valueOf(0);
+        int mArtistNumAlbumsIndex = cursor.getColumnIndexOrThrow(ArtistColumns.NUMBER_OF_ALBUMS);
+        if(cursor.getCount()>0){
+	    	cursor.moveToFirst();
+	        String numAlbums = cursor.getString(mArtistNumAlbumsIndex);	  
+	        if(numAlbums != null){
+	        	return numAlbums;
+	        }
+        }        
+        return String.valueOf(0);
+    }
+
+    /**
      * @return genre name from Bundle
      */
     public String getGenre() {
@@ -331,92 +469,6 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
         if (bundle.getString(PLAYLIST_NAME) != null)
             return bundle.getString(PLAYLIST_NAME);
         return getResources().getString(R.string.butter_name);
-    }
-
-    /**
-     * Set the header when viewing a genre
-     */
-    public void setPromoImage() {
-
-        // Artist image & Genre image
-        ImageView mFirstHalfImage = (ImageView)findViewById(R.id.half_artist_image);
-
-        Bitmap header = BitmapFactory.decodeResource(getResources(), R.drawable.promo);
-        ApolloUtils.runnableBackground(mFirstHalfImage, header);
-    }
-
-    /**
-     * Cache and set artist image
-     */
-    public void setArtistImage() {
-
-        // Artist image & Genre image
-        final ImageView mFirstHalfImage = (ImageView)findViewById(R.id.half_artist_image);
-
-        mFirstHalfImage.post(new Runnable() {
-            @Override
-            public void run() {
-                // Only download images we don't already have
-                if (ApolloUtils.getImageURL(getArtist(), ARTIST_IMAGE_ORIGINAL, TracksBrowser.this) == null)
-                    new LastfmGetArtistImagesOriginal(TracksBrowser.this, mFirstHalfImage)
-                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getArtist());
-                // Get and set cached image
-                new GetCachedImages(TracksBrowser.this, 0, mFirstHalfImage).executeOnExecutor(
-                        AsyncTask.THREAD_POOL_EXECUTOR, getArtist());
-            }
-        });
-
-        mFirstHalfImage.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
-                mHits[mHits.length - 1] = SystemClock.uptimeMillis();
-                if (mHits[0] >= (SystemClock.uptimeMillis() - 250)) {
-                    AnimationDrawable meow = ApolloUtils.getNyanCat(TracksBrowser.this);
-                    mFirstHalfImage.setImageDrawable(meow);
-                    meow.start();
-                }
-            }
-        });
-    }
-
-    /**
-     * Cache and set album image
-     */
-    public void setAlbumImage() {
-
-        // Album image
-        final ImageView mSecondHalfImage = (ImageView)findViewById(R.id.half_album_image);
-
-        mSecondHalfImage.post(new Runnable() {
-            @Override
-            public void run() {
-                // Only download images we don't already have
-                if (ApolloUtils.getImageURL(getAlbum(), ALBUM_IMAGE, TracksBrowser.this) == null)
-                    new LastfmGetAlbumImages(TracksBrowser.this, mSecondHalfImage, 1)
-                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getArtist(),
-                                    getAlbum());
-                // Get and set cached image
-                new GetCachedImages(TracksBrowser.this, 1, mSecondHalfImage).executeOnExecutor(
-                        AsyncTask.THREAD_POOL_EXECUTOR, getAlbum());
-            }
-        });
-    }
-
-    /**
-     * Return here from viewing the tracks for an album and view all albums and
-     * tracks for the same artist
-     */
-    private void tracksBrowser(long id) {
-        bundle.putString(MIME_TYPE, Audio.Artists.CONTENT_TYPE);
-        bundle.putString(ARTIST_KEY, getArtist());
-        bundle.putLong(BaseColumns._ID, id);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setClass(this, TracksBrowser.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
     }
 
     /**
@@ -443,10 +495,10 @@ public class TracksBrowser extends FragmentActivity implements ServiceConnection
             name = MusicUtils.getPlaylistName(this, id);
         } else if (Audio.Artists.CONTENT_TYPE.equals(mimeType)) {
             id = bundle.getLong(BaseColumns._ID);
-            name = MusicUtils.getArtistName(this, id, true);
+            name =  getString (R.string.artist_page_title)+MusicUtils.getArtistName(this, id, true);
         } else if (Audio.Albums.CONTENT_TYPE.equals(mimeType)) {
             id = bundle.getLong(BaseColumns._ID);
-            name = MusicUtils.getAlbumName(this, id, true);
+            name =  getString (R.string.album_page_title)+MusicUtils.getAlbumName(this, id, true);
         } else if (Audio.Genres.CONTENT_TYPE.equals(mimeType)) {
             id = bundle.getLong(BaseColumns._ID);
             name = MusicUtils.parseGenreName(this, MusicUtils.getGenreName(this, id, true));

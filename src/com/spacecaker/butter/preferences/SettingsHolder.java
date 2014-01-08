@@ -4,50 +4,67 @@
 
 package com.spacecaker.butter.preferences;
 
-import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
-import android.content.BroadcastReceiver;
+import java.util.List;
+
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.androidquery.AQuery;
 import com.spacecaker.butter.IApolloService;
 import com.spacecaker.butter.R;
-import com.spacecaker.butter.activities.AudioPlayerHolder;
+import com.spacecaker.butter.activities.MusicLibrary;
+import com.spacecaker.butter.cache.ImageProvider;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
 import com.spacecaker.butter.service.ApolloService;
 import com.spacecaker.butter.service.ServiceToken;
-import com.spacecaker.butter.utils.ApolloUtils;
-import com.spacecaker.butter.utils.MusicUtils;
+
+import static com.spacecaker.butter.Constants.APOLLO;
+import static com.spacecaker.butter.Constants.WIDGET_STYLE;
 /**
  * @author Andrew Neal FIXME - Work on the IllegalStateException thrown when
  *         using PreferenceFragment and theme chooser
  */
 @SuppressWarnings("deprecation")
-public class SettingsHolder extends PreferenceActivity implements ServiceConnection {
+public class SettingsHolder extends PreferenceActivity  implements ServiceConnection  {
+	Context mContext;
 
-    // Service
     private ServiceToken mToken;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // This should be called first thing
         super.onCreate(savedInstanceState);
-
+        mContext = this;
         // Load settings XML
         int preferencesResId = R.xml.settings;
         addPreferencesFromResource(preferencesResId);
-        // ActionBar
-        initActionBar();
+        
+        //Init widget style change option
+        initChangeWidgetTheme();
+        
+        // Init delete cache option
+        initDeleteCache();       
+        
+        //Enable up button
+       // getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -59,6 +76,43 @@ public class SettingsHolder extends PreferenceActivity implements ServiceConnect
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    private void initChangeWidgetTheme(){
+    	ListPreference listPreference = (ListPreference)findPreference(WIDGET_STYLE);
+        listPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                MusicUtils.notifyWidgets(ApolloService.META_CHANGED);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Removes all of the cache entries.
+     */
+    private void initDeleteCache() {
+        final Preference deleteCache = findPreference("delete_cache");
+        deleteCache.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                new AlertDialog.Builder(SettingsHolder.this).setMessage(R.string.delete_warning)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        	@Override
+                            public void onClick(final DialogInterface dialog, final int which) {                        		
+                                ImageProvider.getInstance( (Activity) mContext ).clearAllCaches();
+                            }
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
+                return true;
+            }
+        });
+    }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder obj) {
@@ -69,31 +123,15 @@ public class SettingsHolder extends PreferenceActivity implements ServiceConnect
     public void onServiceDisconnected(ComponentName name) {
         MusicUtils.mService = null;
     }
-
-    /**
-     * Update the ActionBar as needed
-     */
-    private final BroadcastReceiver mMediaStatusReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Update the ActionBar
-            initActionBar();
-        }
-
-    };
-
+    
     @Override
     protected void onStart() {
+
         // Bind to Service
         mToken = MusicUtils.bindToService(this, this);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ApolloService.META_CHANGED);
-        filter.addAction(ApolloService.QUEUE_CHANGED);
-        filter.addAction(ApolloService.PLAYSTATE_CHANGED);
-
-        registerReceiver(mMediaStatusReceiver, filter);
         super.onStart();
     }
 
@@ -103,41 +141,9 @@ public class SettingsHolder extends PreferenceActivity implements ServiceConnect
         if (MusicUtils.mService != null)
             MusicUtils.unbindFromService(mToken);
 
-        unregisterReceiver(mMediaStatusReceiver);
+        //TODO: clear image cache
+
         super.onStop();
     }
 
-    /**
-     * Update the ActionBar
-     */
-    public void initActionBar() {
-        // Custom ActionBar layout
-        View view = getLayoutInflater().inflate(R.layout.custom_action_bar, null);
-        // Show the ActionBar
-        getActionBar().setCustomView(view);
-        getActionBar().setTitle(R.string.settings);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setDisplayShowHomeEnabled(true);
-        getActionBar().setDisplayShowCustomEnabled(true);
-
-        ImageView mAlbumArt = (ImageView)view.findViewById(R.id.action_bar_album_art);
-        TextView mTrackName = (TextView)view.findViewById(R.id.action_bar_track_name);
-        TextView mAlbumName = (TextView)view.findViewById(R.id.action_bar_album_name);
-
-        String url = ApolloUtils.getImageURL(MusicUtils.getAlbumName(), ALBUM_IMAGE, this);
-        AQuery aq = new AQuery(this);
-        mAlbumArt.setImageBitmap(aq.getCachedImage(url));
-
-        mTrackName.setText(MusicUtils.getTrackName());
-        mAlbumName.setText(MusicUtils.getAlbumName());
-
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context context = v.getContext();
-                context.startActivity(new Intent(context, AudioPlayerHolder.class));
-                finish();
-            }
-        });
-    }
 }

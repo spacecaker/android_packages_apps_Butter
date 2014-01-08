@@ -6,7 +6,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 import com.spacecaker.butter.IApolloService;
-import com.spacecaker.butter.utils.MusicUtils;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
 
 public class ServiceBinder implements ServiceConnection {
     private final ServiceConnection mCallback;

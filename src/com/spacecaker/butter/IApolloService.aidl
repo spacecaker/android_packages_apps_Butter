@@ -20,6 +20,7 @@ interface IApolloService
     String getTrackName();
     String getAlbumName();
     long getAlbumId();
+    Bitmap getAlbumBitmap();
     String getArtistName();
     long getArtistId();
     void enqueue(in long [] list, int action);
@@ -28,6 +29,7 @@ interface IApolloService
     String getPath();
     long getAudioId();
     void setShuffleMode(int shufflemode);
+    void notifyChange(String what);
     int getShuffleMode();
     int removeTracks(int first, int last);
     int removeTrack(long id);

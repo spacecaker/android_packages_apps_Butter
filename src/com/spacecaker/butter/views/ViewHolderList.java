@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spacecaker.butter.R;
-import com.spacecaker.butter.utils.ThemeUtils;
+import com.spacecaker.butter.helpers.utils.ThemeUtils;
 
 /**
  * @author Andrew Neal
@@ -23,8 +23,6 @@ public class ViewHolderList {
     public final TextView mViewHolderLineOne;
 
     public final TextView mViewHolderLineTwo;
-
-    public int position;
 
     public final FrameLayout mQuickContext;
 

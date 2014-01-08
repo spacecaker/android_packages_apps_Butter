@@ -10,7 +10,8 @@ import android.os.RemoteException;
 import android.provider.BaseColumns;
 import android.provider.MediaStore.Audio;
 
-import com.spacecaker.butter.utils.MusicUtils;
+import com.spacecaker.butter.IApolloService;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
 
 public class NowPlayingCursor extends AbstractCursor {
 
@@ -167,6 +168,7 @@ public class NowPlayingCursor extends AbstractCursor {
     }
 
     @Override
+	@SuppressWarnings("deprecation")
     public void deactivate() {
         if (mCurrentPlaylistCursor != null)
             mCurrentPlaylistCursor.deactivate();

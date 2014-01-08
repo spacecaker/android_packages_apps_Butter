@@ -15,15 +15,12 @@
 
 package com.spacecaker.butter.service;
 
-import static com.spacecaker.butter.Constants.ALBUM_IMAGE;
-import static com.spacecaker.butter.Constants.APOLLO_PREFERENCES;
-import static com.spacecaker.butter.Constants.DATA_SCHEME;
-
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Random;
 import java.util.Vector;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -39,6 +36,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
@@ -62,22 +60,31 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.MediaColumns;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.androidquery.AQuery;
 import com.spacecaker.butter.IApolloService;
 import com.spacecaker.butter.R;
 import com.spacecaker.butter.app.widgets.AppWidget11;
 import com.spacecaker.butter.app.widgets.AppWidget41;
 import com.spacecaker.butter.app.widgets.AppWidget42;
-import com.spacecaker.butter.utils.ApolloUtils;
-import com.spacecaker.butter.utils.MusicUtils;
-import com.spacecaker.butter.utils.SharedPreferencesCompat;
+import com.spacecaker.butter.cache.ImageInfo;
+import com.spacecaker.butter.helpers.GetBitmapTask;
+import com.spacecaker.butter.helpers.utils.ImageUtils;
+import com.spacecaker.butter.helpers.utils.MusicUtils;
+import com.spacecaker.butter.helpers.utils.VisualizerUtils;
+import com.spacecaker.butter.preferences.SharedPreferencesCompat;
 
-public class ApolloService extends Service {
+import static com.spacecaker.butter.Constants.APOLLO_PREFERENCES;
+import static com.spacecaker.butter.Constants.DATA_SCHEME;
+import static com.spacecaker.butter.Constants.SIZE_THUMB;
+import static com.spacecaker.butter.Constants.SRC_FIRST_AVAILABLE;
+import static com.spacecaker.butter.Constants.TYPE_ALBUM;
+
+public class ApolloService extends Service implements GetBitmapTask.OnBitmapReadyListener {
     /**
      * used to specify whether enqueue() should start playing the new list of
      * files right away, next or once all the currently queued files have been
@@ -231,7 +238,8 @@ public class ApolloService extends Service {
 
     private boolean mIsSupposedToBePlaying = false;
 
-    private boolean mQuietMode = false;
+    @SuppressWarnings("unused")
+	private boolean mQuietMode = false;
 
     private AudioManager mAudioManager;
 
@@ -253,6 +261,12 @@ public class ApolloService extends Service {
     private final AppWidget42 mAppWidgetProvider4x2 = AppWidget42.getInstance();
 
     private final AppWidget41 mAppWidgetProvider4x1 = AppWidget41.getInstance();
+
+    private String mAlbumBitmapTag;
+
+    private Bitmap mAlbumBitmap;
+    
+    private GetBitmapTask mAlbumBitmapTask;
 
     // interval after which we stop the service when idle
     private static final int IDLE_DELAY = 60000;
@@ -302,6 +316,7 @@ public class ApolloService extends Service {
                             mCursor = null;
                         }
                         mCursor = getCursorForId(mPlayList[mPlayPos]);
+                        updateAlbumBitmap();
                         notifyChange(META_CHANGED);
                         updateNotification();
                         setNextTrack();
@@ -423,7 +438,8 @@ public class ApolloService extends Service {
     public ApolloService() {
     }
 
-    @Override
+    @SuppressLint({ "WorldWriteableFiles", "WorldReadableFiles" })
+	@Override
     public void onCreate() {
         super.onCreate();
 
@@ -508,6 +524,7 @@ public class ApolloService extends Service {
             mCursor.close();
             mCursor = null;
         }
+        updateAlbumBitmap();
 
         unregisterReceiver(mIntentReceiver);
         if (mUnmountReceiver != null) {
@@ -913,7 +930,7 @@ public class ApolloService extends Service {
      * file in the list has been played, or that the play-state changed
      * (paused/resumed).
      */
-    private void notifyChange(String what) {
+    public void notifyChange(String what) {
 
         Intent i = new Intent(what);
         i.putExtra("id", Long.valueOf(getAudioId()));
@@ -938,9 +955,7 @@ public class ApolloService extends Service {
             ed.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getAlbumName());
             ed.putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getArtistName());
             ed.putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, duration());
-            AQuery aq = new AQuery(this);
-            Bitmap b = aq
-                    .getCachedImage(ApolloUtils.getImageURL(getAlbumName(), ALBUM_IMAGE, this));
+            Bitmap b = getAlbumBitmap();
             if (b != null) {
                 ed.putBitmap(MetadataEditor.BITMAP_KEY_ARTWORK, b);
             }
@@ -952,7 +967,6 @@ public class ApolloService extends Service {
         } else {
             saveQueue(false);
         }
-
         mAppWidgetProvider1x1.notifyChange(this, what);
         mAppWidgetProvider4x1.notifyChange(this, what);
         mAppWidgetProvider4x2.notifyChange(this, what);
@@ -1001,6 +1015,7 @@ public class ApolloService extends Service {
         if (mPlayListLen == 0) {
             mCursor.close();
             mCursor = null;
+            updateAlbumBitmap();
             notifyChange(META_CHANGED);
         }
     }
@@ -1150,6 +1165,8 @@ public class ApolloService extends Service {
                 }
             }
 
+            updateAlbumBitmap();
+
             // go to bookmark if needed
             if (isPodcast()) {
                 long bookmark = getBookmark();
@@ -1222,6 +1239,8 @@ public class ApolloService extends Service {
                     }
                 } catch (UnsupportedOperationException ex) {
                 }
+
+                updateAlbumBitmap();
             }
             mFileToPlay = path;
             mPlayer.setDataSource(mFileToPlay);
@@ -1309,21 +1328,20 @@ public class ApolloService extends Service {
     }
 
     private void updateNotification() {
-        AQuery aq = new AQuery(this);
-        Bitmap b = aq.getCachedImage(ApolloUtils.getImageURL(getAlbumName(), ALBUM_IMAGE, this));
-
+        Bitmap b = getAlbumBitmap();
         RemoteViews views = new RemoteViews(getPackageName(), R.layout.status_bar);
-		RemoteViews bigViews = new RemoteViews(getPackageName(), R.layout.status_bar_expanded);
-		
+        RemoteViews bigViews = new RemoteViews(getPackageName(), R.layout.status_bar_expanded);
+        
         if (b != null) {
             views.setViewVisibility(R.id.status_bar_icon, View.GONE);
             views.setViewVisibility(R.id.status_bar_album_art, View.VISIBLE);
             views.setImageViewBitmap(R.id.status_bar_album_art, b);
-			bigViews.setImageViewBitmap(R.id.status_bar_album_art, b);
+            bigViews.setImageViewBitmap(R.id.status_bar_album_art, b);
         } else {
             views.setViewVisibility(R.id.status_bar_icon, View.VISIBLE);
             views.setViewVisibility(R.id.status_bar_album_art, View.GONE);
         }
+        
         ComponentName rec = new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getName());
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
@@ -1334,40 +1352,50 @@ public class ApolloService extends Service {
         mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
         PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
                 1, mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         views.setOnClickPendingIntent(R.id.status_bar_play, mediaPendingIntent);
-		bigViews.setOnClickPendingIntent(R.id.status_bar_play, mediaPendingIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_play, mediaPendingIntent);
+        
         mediaButtonIntent.putExtra(CMDNOTIF, 2);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
         mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
         mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 2,
                 mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        
         views.setOnClickPendingIntent(R.id.status_bar_next, mediaPendingIntent);
-		bigViews.setOnClickPendingIntent(R.id.status_bar_next, mediaPendingIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_next, mediaPendingIntent);
+
         mediaButtonIntent.putExtra(CMDNOTIF, 4);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
         mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
         mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 4,
-                mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);       
-        bigViews.setOnClickPendingIntent(R.id.status_bar_prev, mediaPendingIntent);		
+                mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        
+        bigViews.setOnClickPendingIntent(R.id.status_bar_prev, mediaPendingIntent);
+        
         mediaButtonIntent.putExtra(CMDNOTIF, 3);
         mediaKey = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_STOP);
         mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, mediaKey);
         mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 3,
                 mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         views.setOnClickPendingIntent(R.id.status_bar_collapse, mediaPendingIntent);
-		bigViews.setOnClickPendingIntent(R.id.status_bar_collapse, mediaPendingIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_collapse, mediaPendingIntent);
+        
         views.setImageViewResource(R.id.status_bar_play, R.drawable.butter_holo_dark_pause);
-		bigViews.setImageViewResource(R.id.status_bar_play, R.drawable.butter_holo_dark_pause);
+        bigViews.setImageViewResource(R.id.status_bar_play, R.drawable.butter_holo_dark_pause);
 
         views.setTextViewText(R.id.status_bar_track_name, getTrackName());
-		bigViews.setTextViewText(R.id.status_bar_track_name, getTrackName());
+        bigViews.setTextViewText(R.id.status_bar_track_name, getTrackName());
+        
         views.setTextViewText(R.id.status_bar_artist_name, getArtistName());
-		bigViews.setTextViewText(R.id.status_bar_artist_name, getArtistName());
-		bigViews.setTextViewText(R.id.status_bar_album_name, getAlbumName());
-
-        status = new Notification();
+        bigViews.setTextViewText(R.id.status_bar_artist_name, getArtistName());
+        
+        bigViews.setTextViewText(R.id.status_bar_album_name, getAlbumName());
+        
+        status = new Notification.Builder(this).build();
         status.contentView = views;
-		status.bigContentView = bigViews;
+        status.bigContentView = bigViews;
         status.flags = Notification.FLAG_ONGOING_EVENT;
         status.icon = R.drawable.stat_notify_music;
         status.contentIntent = PendingIntent
@@ -1375,6 +1403,7 @@ public class ApolloService extends Service {
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
         startForeground(PLAYBACKSERVICE_STATUS, status);
     }
+    
     private void stop(boolean remove_status_icon) {
         if (mPlayer.isInitialized()) {
             mPlayer.stop();
@@ -1383,6 +1412,7 @@ public class ApolloService extends Service {
         if (mCursor != null) {
             mCursor.close();
             mCursor = null;
+            updateAlbumBitmap();
         }
         if (remove_status_icon) {
             gotoIdleState();
@@ -1618,6 +1648,9 @@ public class ApolloService extends Service {
             status.contentView.setImageViewResource(R.id.status_bar_play,
                     mIsSupposedToBePlaying ? R.drawable.butter_holo_dark_play
                             : R.drawable.butter_holo_dark_pause);
+            status.bigContentView.setImageViewResource(R.id.status_bar_play,
+                    mIsSupposedToBePlaying ? R.drawable.butter_holo_dark_play
+                            : R.drawable.butter_holo_dark_pause);
             NotificationManager mManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
             mManager.notify(PLAYBACKSERVICE_STATUS, status);
         }
@@ -1814,10 +1847,57 @@ public class ApolloService extends Service {
                         play();
                     }
                 }
+                updateAlbumBitmap();
                 notifyChange(META_CHANGED);
             }
             return last - first + 1;
         }
+    }
+
+    private synchronized void updateAlbumBitmap() {
+    	if (mAlbumBitmapTask != null) {
+    		mAlbumBitmapTask.cancel(true);
+    		mAlbumBitmapTask = null;
+    	}
+    	
+    	if (mCursor == null) {
+    		return;
+    	}
+
+        ImageInfo mInfo = new ImageInfo();
+        mInfo.type = TYPE_ALBUM;
+        mInfo.size = SIZE_THUMB;
+        mInfo.source = SRC_FIRST_AVAILABLE;
+        mInfo.data = new String[]{ String.valueOf(getAlbumId()), getArtistName(), getAlbumName() };
+
+        String tag = ImageUtils.createShortTag( mInfo ) + SIZE_THUMB ;
+        if (tag == mAlbumBitmapTag)
+            return;
+
+        mAlbumBitmapTag = tag;
+        mAlbumBitmap = null;
+        
+
+    	Resources resources = getResources();
+    	DisplayMetrics metrics = resources.getDisplayMetrics();
+    	int thumbSize = (int) ( ( 153 * (metrics.densityDpi/160f) ) + 0.5f );
+
+        mAlbumBitmapTask = new GetBitmapTask( thumbSize, mInfo,  this,  this );
+        mAlbumBitmapTask.execute();
+    }
+
+    @Override
+    public void bitmapReady(Bitmap bitmap, String tag) {
+        synchronized (this) {
+            if (tag.equals(mAlbumBitmapTag)) {
+                mAlbumBitmap = bitmap;
+            }
+        }
+        notifyChange(META_CHANGED);
+        if (status != null)
+        	updateNotification();
+
+        mAlbumBitmapTask = null;
     }
 
     /**
@@ -1972,6 +2052,10 @@ public class ApolloService extends Service {
             }
             return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
         }
+    }
+
+    public Bitmap getAlbumBitmap() {
+        return mAlbumBitmap;
     }
 
     public String getTrackName() {
@@ -2144,6 +2228,8 @@ public class ApolloService extends Service {
             i.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
             i.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
             sendBroadcast(i);
+
+            VisualizerUtils.initVisualizer( player );
             return true;
         }
 
@@ -2188,6 +2274,7 @@ public class ApolloService extends Service {
         public void release() {
             stop();
             mCurrentMediaPlayer.release();
+            VisualizerUtils.releaseVisualizer();
         }
 
         public void pause() {
@@ -2349,6 +2436,11 @@ public class ApolloService extends Service {
         }
 
         @Override
+        public Bitmap getAlbumBitmap() {
+            return mService.get().getAlbumBitmap();
+        }
+
+        @Override
         public long getAlbumId() {
             return mService.get().getAlbumId();
         }
@@ -2456,6 +2548,10 @@ public class ApolloService extends Service {
         @Override
         public void toggleFavorite() throws RemoteException {
             mService.get().toggleFavorite();
+        }
+        
+        public void notifyChange(String what){
+        	mService.get().notifyChange(what);
         }
 
     }

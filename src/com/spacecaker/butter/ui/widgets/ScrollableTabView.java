@@ -19,14 +19,13 @@ package com.spacecaker.butter.ui.widgets;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-import com.spacecaker.butter.adapters.TabAdapter;
+import com.spacecaker.butter.ui.adapters.TabAdapter;
 
 /**
  * I'm using a custom tab view in place of ActionBarTabs entirely for the theme
@@ -35,25 +34,13 @@ import com.spacecaker.butter.adapters.TabAdapter;
 public class ScrollableTabView extends HorizontalScrollView implements
         ViewPager.OnPageChangeListener {
 
-    private final Context mContext;
+    private ViewPager mPager = null;
 
-    private ViewPager mPager;
-
-    private TabAdapter mAdapter;
+    private TabAdapter mAdapter = null;
 
     private final LinearLayout mContainer;
 
     private final ArrayList<View> mTabs = new ArrayList<View>();
-
-    private Drawable mDividerDrawable;
-
-    private final int mDividerColor = 0x00000000;
-
-    private int mDividerMarginTop = 12;
-
-    private int mDividerMarginBottom = 12;
-
-    private int mDividerWidth = 1;
 
     public ScrollableTabView(Context context) {
         this(context, null);
@@ -65,12 +52,6 @@ public class ScrollableTabView extends HorizontalScrollView implements
 
     public ScrollableTabView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
-
-        this.mContext = context;
-
-        mDividerMarginTop = (int)(getResources().getDisplayMetrics().density * mDividerMarginTop);
-        mDividerMarginBottom = (int)(getResources().getDisplayMetrics().density * mDividerMarginBottom);
-        mDividerWidth = (int)(getResources().getDisplayMetrics().density * mDividerWidth);
 
         this.setHorizontalScrollBarEnabled(false);
         this.setHorizontalFadingEdgeEnabled(false);
@@ -120,10 +101,6 @@ public class ScrollableTabView extends HorizontalScrollView implements
 
             mTabs.add(tab);
 
-            if (i != mPager.getAdapter().getCount() - 1) {
-                mContainer.addView(getSeparator());
-            }
-
             tab.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -157,34 +134,18 @@ public class ScrollableTabView extends HorizontalScrollView implements
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
 
-        if (changed)
+        if (changed && mPager != null)
             selectTab(mPager.getCurrentItem());
-    }
-
-    private View getSeparator() {
-        View v = new View(mContext);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(mDividerWidth,
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT);
-        params.setMargins(0, mDividerMarginTop, 0, mDividerMarginBottom);
-        v.setLayoutParams(params);
-
-        if (mDividerDrawable != null)
-            v.setBackgroundDrawable(mDividerDrawable);
-        else
-            v.setBackgroundColor(mDividerColor);
-
-        return v;
     }
 
     private void selectTab(int position) {
 
-        for (int i = 0, pos = 0; i < mContainer.getChildCount(); i += 2, pos++) {
+        for (int i = 0, pos = 0; i < mContainer.getChildCount(); i ++ , pos++) {
             View tab = mContainer.getChildAt(i);
             tab.setSelected(pos == position);
         }
-
-        View selectedTab = mContainer.getChildAt(position * 2);
+        
+        View selectedTab = mContainer.getChildAt(position);
 
         final int w = selectedTab.getMeasuredWidth();
         final int l = selectedTab.getLeft();

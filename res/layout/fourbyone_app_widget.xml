@@ -21,7 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
-        android:background="#222222"
+        android:background="@drawable/holo_selector"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="#ffffffff"
+            android:textColor="@color/transparent_black"
             android:textSize="@dimen/text_size_small"
             android:textStyle="bold" />
 
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="#ffffffff"
+            android:textColor="@color/transparent_black"
             android:textSize="@dimen/text_size_small" />
     </LinearLayout>
 
@@ -53,16 +53,16 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="#222222"
+        android:background="@drawable/holo_selector"
         android:scaleType="center"
-        android:src="@drawable/space_previous"
+        android:src="@drawable/butter_holo_light_previous"
         android:visibility="gone"
         android:contentDescription="@string/cd_previous" />
 
     <ImageView
         android:layout_width="0.2dp"
         android:layout_height="match_parent"
-        android:background="#222222"
+        android:background="@color/transparent_black"
         tools:ignore="ContentDescription" />
 
     <ImageButton
@@ -70,15 +70,15 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="#222222"
+        android:background="@drawable/holo_selector"
         android:scaleType="center"
-        android:src="@drawable/space_play"
+        android:src="@drawable/butter_holo_light_play"
         android:contentDescription="@string/cd_play" />
 
     <ImageView
         android:layout_width="0.2dp"
         android:layout_height="match_parent"
-        android:background="#222222"
+        android:background="@color/transparent_black"
         tools:ignore="ContentDescription" />
 
     <ImageButton
@@ -86,9 +86,9 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="#222222"
+        android:background="@drawable/holo_selector"
         android:scaleType="center"
-        android:src="@drawable/space_forw"
+        android:src="@drawable/butter_holo_light_next"
         android:contentDescription="@string/cd_next" />
 
 </LinearLayout>

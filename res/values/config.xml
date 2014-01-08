@@ -2,7 +2,7 @@
 <resources>
 
     <!-- ViewPager margin width -->
-    <integer name="viewpager_margin_width">30</integer>
+    <integer name="viewpager_margin_width">0</integer>
 
     <!-- ListView album art size -->
     <integer name="listview_album_art">133</integer>
@@ -16,5 +16,8 @@
     <!-- ListView padding when header is applied -->
     <integer name="listview_padding_left">16</integer>
     <integer name="listview_padding_right">32</integer>
+
+    <!-- Fade in duration for newly downloaded album and artist images -->
+    <integer name="image_fade_in_duration">150</integer>
 
 </resources>
