@@ -4530,6 +4530,8 @@ com.spacecaker.butter.R$layout: int custom_action_bar
 com.spacecaker.butter.R$layout: int empty_view
 com.spacecaker.butter.R$layout: int fourbyone_app_widget
 com.spacecaker.butter.R$layout: int fourbyone_app_widget_dark
+com.spacecaker.butter.R$layout: int fourbytwo_app_sleek_widget
+com.spacecaker.butter.R$layout: int fourbytwo_app_sleek_widget_dark
 com.spacecaker.butter.R$layout: int fourbytwo_app_widget
 com.spacecaker.butter.R$layout: int fourbytwo_app_widget_dark
 com.spacecaker.butter.R$layout: int gridview
@@ -4577,6 +4579,7 @@ com.spacecaker.butter.R$string: int artist_page_title
 com.spacecaker.butter.R$string: int butter_1x1
 com.spacecaker.butter.R$string: int butter_4x1
 com.spacecaker.butter.R$string: int butter_4x2
+com.spacecaker.butter.R$string: int butter_4x22
 com.spacecaker.butter.R$string: int butter_name
 com.spacecaker.butter.R$string: int by
 com.spacecaker.butter.R$string: int cd_bottom_action_bar_album_art
@@ -4696,6 +4699,7 @@ com.spacecaker.butter.R$style: R$style()
 com.spacecaker.butter.R$xml
 com.spacecaker.butter.R$xml: int appwidget1x1_info
 com.spacecaker.butter.R$xml: int appwidget4x1_info
+com.spacecaker.butter.R$xml: int appwidget4x22_info
 com.spacecaker.butter.R$xml: int appwidget4x2_info
 com.spacecaker.butter.R$xml: int searchable
 com.spacecaker.butter.R$xml: int settings
@@ -4798,6 +4802,13 @@ com.spacecaker.butter.app.widgets.AppWidget42: com.spacecaker.butter.app.widgets
 com.spacecaker.butter.app.widgets.AppWidget42: void onUpdate(android.content.Context,android.appwidget.AppWidgetManager,int[])
 com.spacecaker.butter.app.widgets.AppWidget42: void notifyChange(com.spacecaker.butter.service.ApolloService,java.lang.String)
 com.spacecaker.butter.app.widgets.AppWidget42: void performUpdate(com.spacecaker.butter.service.ApolloService,int[])
+com.spacecaker.butter.app.widgets.AppWidget422
+com.spacecaker.butter.app.widgets.AppWidget422: java.lang.String CMDAPPWIDGETUPDATE
+com.spacecaker.butter.app.widgets.AppWidget422: AppWidget422()
+com.spacecaker.butter.app.widgets.AppWidget422: com.spacecaker.butter.app.widgets.AppWidget422 getInstance()
+com.spacecaker.butter.app.widgets.AppWidget422: void onUpdate(android.content.Context,android.appwidget.AppWidgetManager,int[])
+com.spacecaker.butter.app.widgets.AppWidget422: void notifyChange(com.spacecaker.butter.service.ApolloService,java.lang.String)
+com.spacecaker.butter.app.widgets.AppWidget422: void performUpdate(com.spacecaker.butter.service.ApolloService,int[])
 com.spacecaker.butter.cache.ImageCache
 com.spacecaker.butter.cache.ImageCache: ImageCache(android.content.Context)
 com.spacecaker.butter.cache.ImageCache: com.spacecaker.butter.cache.ImageCache getInstance(android.content.Context)

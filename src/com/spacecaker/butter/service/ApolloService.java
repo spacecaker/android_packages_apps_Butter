@@ -71,6 +71,7 @@ import com.spacecaker.butter.R;
 import com.spacecaker.butter.app.widgets.AppWidget11;
 import com.spacecaker.butter.app.widgets.AppWidget41;
 import com.spacecaker.butter.app.widgets.AppWidget42;
+import com.spacecaker.butter.app.widgets.AppWidget422;
 import com.spacecaker.butter.cache.ImageInfo;
 import com.spacecaker.butter.helpers.GetBitmapTask;
 import com.spacecaker.butter.helpers.utils.ImageUtils;
@@ -259,6 +260,8 @@ public class ApolloService extends Service implements GetBitmapTask.OnBitmapRead
     private final AppWidget11 mAppWidgetProvider1x1 = AppWidget11.getInstance();
 
     private final AppWidget42 mAppWidgetProvider4x2 = AppWidget42.getInstance();
+	
+	private final AppWidget422 mAppWidgetProvider4x22 = AppWidget422.getInstance();
 
     private final AppWidget41 mAppWidgetProvider4x1 = AppWidget41.getInstance();
 
@@ -415,6 +418,9 @@ public class ApolloService extends Service implements GetBitmapTask.OnBitmapRead
                 cycleRepeat();
             } else if (CMDTOGGLESHUFFLE.equals(cmd) || TOGGLESHUFFLE_ACTION.equals(action)) {
                 toggleShuffle();
+            } else if (AppWidget422.CMDAPPWIDGETUPDATE.equals(cmd)) {
+                int[] appWidgetIds = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+                mAppWidgetProvider4x22.performUpdate(ApolloService.this, appWidgetIds);				
             } else if (AppWidget42.CMDAPPWIDGETUPDATE.equals(cmd)) {
                 int[] appWidgetIds = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
                 mAppWidgetProvider4x2.performUpdate(ApolloService.this, appWidgetIds);
@@ -970,6 +976,7 @@ public class ApolloService extends Service implements GetBitmapTask.OnBitmapRead
         mAppWidgetProvider1x1.notifyChange(this, what);
         mAppWidgetProvider4x1.notifyChange(this, what);
         mAppWidgetProvider4x2.notifyChange(this, what);
+		mAppWidgetProvider4x22.notifyChange(this, what);
 
     }
 

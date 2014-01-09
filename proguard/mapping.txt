@@ -4418,6 +4418,8 @@ com.spacecaker.butter.R$layout -> com.spacecaker.butter.R$layout:
     int empty_view -> empty_view
     int fourbyone_app_widget -> fourbyone_app_widget
     int fourbyone_app_widget_dark -> fourbyone_app_widget_dark
+    int fourbytwo_app_sleek_widget -> fourbytwo_app_sleek_widget
+    int fourbytwo_app_sleek_widget_dark -> fourbytwo_app_sleek_widget_dark
     int fourbytwo_app_widget -> fourbytwo_app_widget
     int fourbytwo_app_widget_dark -> fourbytwo_app_widget_dark
     int gridview -> gridview
@@ -4462,6 +4464,7 @@ com.spacecaker.butter.R$string -> com.spacecaker.butter.R$string:
     int butter_1x1 -> butter_1x1
     int butter_4x1 -> butter_4x1
     int butter_4x2 -> butter_4x2
+    int butter_4x22 -> butter_4x22
     int butter_name -> butter_name
     int by -> by
     int cd_bottom_action_bar_album_art -> cd_bottom_action_bar_album_art
@@ -4579,6 +4582,7 @@ com.spacecaker.butter.R$style -> com.spacecaker.butter.R$style:
 com.spacecaker.butter.R$xml -> com.spacecaker.butter.R$xml:
     int appwidget1x1_info -> appwidget1x1_info
     int appwidget4x1_info -> appwidget4x1_info
+    int appwidget4x22_info -> appwidget4x22_info
     int appwidget4x2_info -> appwidget4x2_info
     int searchable -> searchable
     int settings -> settings
@@ -4715,6 +4719,15 @@ com.spacecaker.butter.app.widgets.AppWidget42 -> com.spacecaker.butter.app.widge
     java.lang.String CMDAPPWIDGETUPDATE -> CMDAPPWIDGETUPDATE
     com.spacecaker.butter.app.widgets.AppWidget42 sInstance -> a
     com.spacecaker.butter.app.widgets.AppWidget42 getInstance() -> getInstance
+    void onUpdate(android.content.Context,android.appwidget.AppWidgetManager,int[]) -> onUpdate
+    void pushUpdate(android.content.Context,int[],android.widget.RemoteViews) -> a
+    void notifyChange(com.spacecaker.butter.service.ApolloService,java.lang.String) -> notifyChange
+    void performUpdate(com.spacecaker.butter.service.ApolloService,int[]) -> performUpdate
+    void linkButtons(android.content.Context,android.widget.RemoteViews,boolean) -> a
+com.spacecaker.butter.app.widgets.AppWidget422 -> com.spacecaker.butter.app.widgets.AppWidget422:
+    java.lang.String CMDAPPWIDGETUPDATE -> CMDAPPWIDGETUPDATE
+    com.spacecaker.butter.app.widgets.AppWidget422 sInstance -> a
+    com.spacecaker.butter.app.widgets.AppWidget422 getInstance() -> getInstance
     void onUpdate(android.content.Context,android.appwidget.AppWidgetManager,int[]) -> onUpdate
     void pushUpdate(android.content.Context,int[],android.widget.RemoteViews) -> a
     void notifyChange(com.spacecaker.butter.service.ApolloService,java.lang.String) -> notifyChange
@@ -5258,17 +5271,18 @@ com.spacecaker.butter.service.ApolloService -> com.spacecaker.butter.service.Apo
     int mCardId -> A
     com.spacecaker.butter.app.widgets.AppWidget11 mAppWidgetProvider1x1 -> B
     com.spacecaker.butter.app.widgets.AppWidget42 mAppWidgetProvider4x2 -> C
-    com.spacecaker.butter.app.widgets.AppWidget41 mAppWidgetProvider4x1 -> D
-    java.lang.String mAlbumBitmapTag -> E
-    android.graphics.Bitmap mAlbumBitmap -> F
-    com.spacecaker.butter.helpers.GetBitmapTask mAlbumBitmapTask -> G
-    android.media.RemoteControlClient mRemoteControlClient -> H
-    android.os.Handler mMediaplayerHandler -> I
-    android.content.BroadcastReceiver mIntentReceiver -> J
-    android.media.AudioManager$OnAudioFocusChangeListener mAudioFocusListener -> K
-    char[] hexdigits -> L
-    android.os.Handler mDelayedStopHandler -> M
-    android.os.IBinder mBinder -> N
+    com.spacecaker.butter.app.widgets.AppWidget422 mAppWidgetProvider4x22 -> D
+    com.spacecaker.butter.app.widgets.AppWidget41 mAppWidgetProvider4x1 -> E
+    java.lang.String mAlbumBitmapTag -> F
+    android.graphics.Bitmap mAlbumBitmap -> G
+    com.spacecaker.butter.helpers.GetBitmapTask mAlbumBitmapTask -> H
+    android.media.RemoteControlClient mRemoteControlClient -> I
+    android.os.Handler mMediaplayerHandler -> J
+    android.content.BroadcastReceiver mIntentReceiver -> K
+    android.media.AudioManager$OnAudioFocusChangeListener mAudioFocusListener -> L
+    char[] hexdigits -> M
+    android.os.Handler mDelayedStopHandler -> N
+    android.os.IBinder mBinder -> O
     void onCreate() -> onCreate
     void onDestroy() -> onDestroy
     void saveQueue(boolean) -> a
@@ -5357,17 +5371,18 @@ com.spacecaker.butter.service.ApolloService -> com.spacecaker.butter.service.Apo
     android.os.PowerManager$WakeLock access$15(com.spacecaker.butter.service.ApolloService) -> m
     void access$16(com.spacecaker.butter.service.ApolloService,boolean) -> a
     boolean access$17(com.spacecaker.butter.service.ApolloService) -> n
-    com.spacecaker.butter.app.widgets.AppWidget42 access$18(com.spacecaker.butter.service.ApolloService) -> o
-    com.spacecaker.butter.app.widgets.AppWidget41 access$19(com.spacecaker.butter.service.ApolloService) -> p
-    com.spacecaker.butter.app.widgets.AppWidget11 access$20(com.spacecaker.butter.service.ApolloService) -> q
-    boolean access$21(com.spacecaker.butter.service.ApolloService) -> r
-    void access$22$5aa64632(com.spacecaker.butter.service.ApolloService) -> s
-    int access$23(com.spacecaker.butter.service.ApolloService) -> t
-    void access$24(com.spacecaker.butter.service.ApolloService,boolean) -> b
-    int access$25(com.spacecaker.butter.service.ApolloService) -> u
-    void access$26(com.spacecaker.butter.service.ApolloService,int) -> b
-    void access$27(com.spacecaker.butter.service.ApolloService,int) -> c
-    void access$28(com.spacecaker.butter.service.ApolloService) -> v
+    com.spacecaker.butter.app.widgets.AppWidget422 access$18(com.spacecaker.butter.service.ApolloService) -> o
+    com.spacecaker.butter.app.widgets.AppWidget42 access$19(com.spacecaker.butter.service.ApolloService) -> p
+    com.spacecaker.butter.app.widgets.AppWidget41 access$20(com.spacecaker.butter.service.ApolloService) -> q
+    com.spacecaker.butter.app.widgets.AppWidget11 access$21(com.spacecaker.butter.service.ApolloService) -> r
+    boolean access$22(com.spacecaker.butter.service.ApolloService) -> s
+    void access$23$5aa64632(com.spacecaker.butter.service.ApolloService) -> t
+    int access$24(com.spacecaker.butter.service.ApolloService) -> u
+    void access$25(com.spacecaker.butter.service.ApolloService,boolean) -> b
+    int access$26(com.spacecaker.butter.service.ApolloService) -> v
+    void access$27(com.spacecaker.butter.service.ApolloService,int) -> b
+    void access$28(com.spacecaker.butter.service.ApolloService,int) -> c
+    void access$29(com.spacecaker.butter.service.ApolloService) -> w
 com.spacecaker.butter.service.ApolloService$1 -> com.spacecaker.butter.service.a:
     float mCurrentVolume -> a
     com.spacecaker.butter.service.ApolloService this$0 -> b

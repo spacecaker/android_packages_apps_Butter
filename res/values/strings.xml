@@ -99,6 +99,7 @@
     <string name="butter_1x1">Butter (1x1)</string>
     <string name="butter_4x1">Butter (4x1)</string>
     <string name="butter_4x2">Butter (4x2)</string>
+	<string name="butter_4x22">Butter-Minimal (4x2)</string>
 
     <!-- Unknown genre name -->
     <string name="unknown">Unknown</string>
